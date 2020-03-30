@@ -9,7 +9,7 @@ This is a Helm v3 plugin provides you the ability to run unit test against your 
 Install the latest version:
 
 ```
-$ helm plugin install https://github.com/HamzaK8s/helm-unit
+$ helm plugin install https://github.com/HamzaZo/helm-unit
 ```
 
 You can also verify it's been installed using:
