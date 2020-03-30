@@ -32,10 +32,7 @@ class HelmUnit:
             return self.args_cli
         except IOError as err:
             self.arg_parser.error(str(err))
-            
- 
-
-    
+                
     
     def check_helm_version(self):
         """
@@ -85,9 +82,6 @@ class Linter(HelmUnit):
             print('❌ Failed to find a chart - linting failed :: {}'.format(err))
             
             
-
-
-
                  
 class UnitTest(Linter):
     def __init__(self):
