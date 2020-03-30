@@ -1,5 +1,7 @@
 #!/bin/sh
 
+## Inspired by https://github.com/nouney/helm-gcs/blob/master/scripts/install.sh
+
 cd $HELM_PLUGIN_DIR
 version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
 echo "Downloading and installing helm-unit v${version} ..."
@@ -10,7 +12,6 @@ unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     os=Linux;;
     Darwin*)    os=Darwin;;
-    CYGWIN*)    os=Cygwin;;
     MINGW*)     os=windows;;
     *)          os="UNKNOWN:${unameOut}"
 esac
