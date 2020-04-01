@@ -47,7 +47,6 @@ $ helm plugin list
 ### Usage 
 
 Running `helm unit`:
-
 ```
 $ helm unit -h
 usage: helm unit [CHART-DIR] [TEST-FILE]
@@ -62,7 +61,8 @@ optional arguments:
   --version    Print version information
 
 ```
-It will render and validate your charts locally also runs tests defined in test YAML file.
++ Will render and validate locally `[CHART-DIR]`
++ Run tests defined in `[TEST-FILE]` YAML file on your`[CHART-DIR]`
 
 ### Examples 
 
