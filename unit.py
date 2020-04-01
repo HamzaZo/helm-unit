@@ -128,38 +128,42 @@ class UnitTest(Linter):
         self.kind_name = parse('$.tests[0].name').find(self.test_file)
         print('==> Running Tests on {} {}..⏳\n'.format(self.kind_name[0].value,self.kind_type[0].value))
         time.sleep(1)
-        self.test_scenario = parse('$..asserts[*]').find(self.test_file)  
-        for k in self.test_scenario:
-            for item in k.value['values']:
-                self.find_spec = parse('$.' + item['path']).find(self.mydict[self.kind_type[0].value][self.kind_name[0].value])
-                if len(self.find_spec) == 0:  
-                    print('❌ Errors : Could not find expected {} in templates \n'.format(item['path']))
-                    break
-                if k.value['type'] == 'equal':
-                    if self.find_spec[0].value is not None and self.find_spec[0].value == item['value']:
-                        print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+        self.test_scenario = parse('$..asserts[*]').find(self.test_file)
+        try:
+            for k in self.test_scenario:
+                for item in k.value['values']:
+                    self.find_spec = parse('$.' + item['path']).find(self.mydict[self.kind_type[0].value][self.kind_name[0].value])
+                    if len(self.find_spec) == 0:  
+                        print('❌ Errors : Could not find expected {} in templates \n'.format(item['path']))
+                        break
+                    if k.value['type'] == 'equal':
+                        if self.find_spec[0].value is not None and self.find_spec[0].value == item['value']:
+                            print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                        else:
+                            print('❌ {} : FAILED \n'.format(k.value['name']))
+                    elif k.value['type'] == 'notEqual':
+                        if self.find_spec[0].value is not None and self.find_spec[0].value != item['value']:
+                            print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                        else:
+                            print('❌ {} : FAILED \n'.format(k.value['name']))
+                    elif k.value['type'] == 'contains':
+                        self.content_Array = [match.value for match in parse('$.'+ item['path']).find(self.mydict[self.kind_type[0].value][self.kind_name[0].value])]
+                        if item['value'] in self.content_Array:
+                            print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                        else:
+                            print('❌ {} : FAILED \n'.format(k.value['name']))
+                    elif k.value['type'] == 'isNotEmpty':
+                        if self.find_spec[0].value is not None and len(self.find_spec[0].value) > 0:
+                            print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                        else:
+                            print('❌ {} : FAILED \n'.format(k.value['name']))
                     else:
-                        print('❌ {} : FAILED \n'.format(k.value['name']))
-                elif k.value['type'] == 'notEqual':
-                    if self.find_spec[0].value is not None and self.find_spec[0].value != item['value']:
-                        print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
-                    else:
-                        print('❌ {} : FAILED \n'.format(k.value['name']))
-                elif k.value['type'] == 'contains':
-                    self.content_Array = [match.value for match in parse('$.'+ item['path']).find(self.mydict[self.kind_type[0].value][self.kind_name[0].value])]
-                    if item['value'] in self.content_Array:
-                        print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
-                    else:
-                        print('❌ {} : FAILED \n'.format(k.value['name']))
-                elif k.value['type'] == 'isNotEmpty':
-                    if self.find_spec[0].value is not None and len(self.find_spec[0].value) > 0:
-                        print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
-                    else:
-                        print('❌ {} : FAILED \n'.format(k.value['name']))
-                else:
-                    print('❌ Unrecognized type {}  \n'.format(k.value['type']))
+                        print('❌ Unrecognized type {}  \n'.format(k.value['type']))
                     
-                             
+        except Exception as err:
+            print('❌ testing {} chart templates failed :: {}'.format(err,self.dir))
+               
+               
             
 if __name__ == "__main__":
     yaml = YAML()
