@@ -1,6 +1,5 @@
 #!/bin/sh
 
-## Inspired by https://github.com/nouney/helm-gcs/blob/master/scripts/install.sh
 
 cd $HELM_PLUGIN_DIR
 version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
@@ -42,6 +41,7 @@ fi
 
 # Install bin
 rm -rf bin && mkdir bin && tar xzvf $filename -C bin > /dev/null && rm -f $filename
+ 
 
 echo "helm-unit ${version} is correctly installed."
 echo
