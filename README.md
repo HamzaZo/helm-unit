@@ -6,15 +6,15 @@
 
 ## Overview
 
-`helm-unit` plugin provides you the ability to run unit-test against your helm chart templates locally without installing anything on your cluster.  
+`helm-unit` plugin provides you the ability to run unit-test on your helm chart templates locally without installing anything on your cluster.  
 
 ## Features
 + validate & render chart locally without creating anything on your cluster.
-+ write unit test scenario in YAML file.
++ write unit test scenario in YAML file for every k8s object.
 + support umbrella chart
 
 ## Roadmap 
-+ create `unit-test` directory to load all unit-test files
++ create `unit-test` directory to load automatically all unit-test files.
 
 ## Prerequisite
 
