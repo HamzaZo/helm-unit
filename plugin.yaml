@@ -4,7 +4,7 @@ usage: "Unit test for helm chart templates"
 description: |-
   This plugin provides you the ability to run unit test against your helm chart templates.
 ignoreFlags: false
-command: "$HELM_PLUGIN_DIR/bin/helm-unit"
+command: "$HELM_PLUGIN_DIR/bin/unit"
 
 hooks:
   install: "cd $HELM_PLUGIN_DIR; ./scripts/install.sh"
