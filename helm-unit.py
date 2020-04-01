@@ -7,7 +7,6 @@ from ruamel.yaml import YAML
 from jsonpath_ng import jsonpath, parse
 import time
 import sys
-import fileinput
 
 
 
