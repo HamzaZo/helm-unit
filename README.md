@@ -15,6 +15,7 @@
 
 ## Roadmap 
 + create `unit-test` directory to load automatically all unit-test files.
++ create a pre-check which evaluate all preconisations of k8s
 
 ## Prerequisite
 
