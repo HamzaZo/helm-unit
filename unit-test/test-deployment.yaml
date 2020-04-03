@@ -1,7 +1,7 @@
 tests:
   - description: Run the following test on deployment 
     type: Deployment
-    name: nginx
+    name: toto-nginx
     asserts:
     - name: check if we use the right number of replicas
       type: equal
