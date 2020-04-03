@@ -1,0 +1,32 @@
+tests:
+  - description: Run the following test on deployment 
+    type: Deployment
+    name: front-app2
+    asserts:
+    - name: check if we use the right number of replicas
+      type: equal
+      values:
+      - path: spec.replicas
+        value: 1 
+    - name: check image tag
+      type: notEqual
+      values:
+      - path: spec.template.spec.containers[0].image
+        value: nginx:latest
+    - name: check serviceAccount Name
+      type: isNotEmpty
+      values:
+      - path: spec.template.spec.serviceAccountName
+    - name: check container port value
+      type: equal
+      values:
+      - path: spec.template.spec.containers[0].ports[0].containerPort
+        value: 8080
+    - name: verify if resource exist
+      type: isNotEmpty
+      values:
+      - path: spec.template.spec.containers[0].resources
+    - name: check that metadata labels are set and not empty
+      type: isNotEmpty
+      values:
+      - path: metadata.labels

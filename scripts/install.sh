@@ -53,7 +53,7 @@ curl  --silent --show-error \
           "$redirect_url"
 
 # Install bin
-rm -rf bin && mkdir bin && tar xzf helm-unit_${version}_${os}_${arch}.tar.gz -C bin > /dev/null && rm -f helm-unit_${version}_${os}_${arch}.tar.gz
+rm -rf bin && mkdir bin && tar xzf helm-unit_${version}_${os}_${arch}.tar.gz -C bin >/dev/null 2>&1 && rm -f helm-unit_${version}_${os}_${arch}.tar.gz
  
 
 echo "helm-unit ${version} is correctly installed."
