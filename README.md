@@ -1,5 +1,5 @@
 [![Licence](https://img.shields.io/badge/licence-Apache%202.0-green)]()
-[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.0-brightgreen)]()
+[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.1-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-v3.7-green)]()
 
 # helm-unit 
@@ -9,12 +9,11 @@
 `helm-unit` plugin provides you the ability to run unit-test on your helm chart templates locally without installing anything on your cluster.  
 
 ## Features
-+ validate & render chart locally without creating anything on your cluster.
-+ write unit test scenario in YAML file for every k8s object.
-+ support umbrella chart
++ Validate & render chart locally without creating anything on your cluster.
++ Write unit test scenario in YAML file.
++ Run all unit-test files defined in `unit-test` directory.
 
 ## Roadmap 
-+ create `unit-test` directory to load automatically all unit-test files.
 + create a pre-check which evaluate all preconisations of k8s
 
 ## Prerequisite
@@ -48,22 +47,23 @@ $ helm plugin list
 ### Usage 
 
 Running `helm unit`:
+
++ Will validate and render locally `[CHART-DIR]`
++ Run tests defined in `[TEST-DIR]` directory on your `[CHART-DIR]`
+  
 ```
 $ helm unit -h
-usage: helm unit [CHART-DIR] [TEST-FILE]
+usage: helm unit [CHART-DIR] [TEST-DIR]
 
-The Helm TestUnit plugin runs tests on a chart locally without deloying the
-release.
+Run unit-test on chart locally without deloying the release.
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --chart DIR  Specify chart directory
-  --test FILE  Specify Test Unit in a YAML file
-  --version    Print version information
+  -h, --help    show this help message and exit
+  --chart DIR   Specify chart directory
+  --tests TESTS Specify Unit tests directory
+  --version     Print version information
 
 ```
-+ Will render and validate locally `[CHART-DIR]`
-+ Run tests defined in `[TEST-FILE]` YAML file on your`[CHART-DIR]`
 
 ### Examples 
 
@@ -74,7 +74,7 @@ Example of test file for Deployment
 tests:
   - description: Run the following test on deployment 
     type: Deployment
-    name: nginx
+    name: front-app2
     asserts:
     - name: check if we use the right number of replicas
       type: equal
@@ -111,7 +111,7 @@ test file for Ingress
 tests:
   - description: Run the following test on Ingress 
     type: Ingress
-    name: demo-ing
+    name: front-ing
     asserts:
     - name: check ingress path
       type: contains
