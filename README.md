@@ -74,7 +74,7 @@ Example of test file for Deployment
 tests:
   - description: Run the following test on deployment 
     type: Deployment
-    name: app-front
+    name: nginx
     asserts:
     - name: check if we use the right number of replicas
       type: equal
@@ -111,7 +111,7 @@ test file for Ingress
 tests:
   - description: Run the following test on Ingress 
     type: Ingress
-    name: my-ing
+    name: demo-ing
     asserts:
     - name: check ingress path
       type: contains
