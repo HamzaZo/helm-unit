@@ -20,7 +20,7 @@ class HelmUnit:
         Create helm unit cli plugin
         """
         
-        self.arg_parser = argparse.ArgumentParser(description='The Helm TestUnit plugin runs tests on a chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-FILE]')
+        self.arg_parser = argparse.ArgumentParser(description='Helm unit runs unit-test on a chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-FILE]')
         self.arg_parser.add_argument('--chart',dest='dir',type=str,required=True,help='Specify chart directory')
         self.arg_parser.add_argument('--test',dest='file',type=argparse.FileType('r'),required=True,help='Specify Test Unit in a YAML file')
         self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.0-alpha}',help='Print version information')
@@ -88,7 +88,7 @@ class UnitTest(Linter):
     
     def render_chart(self):
         """
-        Validate and Render chart templates locally and store it into a dict.
+        Validate and Render chart templates locally.
         """
         self.linting_chart()
         kinds = []
@@ -119,7 +119,7 @@ class UnitTest(Linter):
     
     def run_test(self):
         """
-        Running Unit test on helm chart templates
+        Running Unit test on helm chart templates.
         """
         self.render_chart()        
         self.test_file = yaml.load(self.file)

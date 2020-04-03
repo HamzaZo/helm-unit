@@ -1,7 +1,7 @@
 tests:
   - description: Run the following test on Ingress 
     type: Ingress
-    name: toto-ing
+    name: demo-ing
     asserts:
     - name: check ingress path
       type: contains
