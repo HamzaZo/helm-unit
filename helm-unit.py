@@ -37,7 +37,7 @@ class HelmUnit:
             return self.args_cli
         except IOError as err:
             self.arg_parser.error(str(err))
-                
+              
     
     def validator_pre_check(self):
         """
@@ -79,6 +79,7 @@ class HelmUnit:
 class Linter(HelmUnit):
     def __init__(self):
         super().__init__()
+        
     
     def linting_chart(self):
         """
@@ -150,11 +151,11 @@ class UnitTest(Linter):
         """
         self.render_chart()
         for file_name,file_test in self.dic_tests.items():
-            print('--> Starting {} file..⏳\n'.format(file_name))
+            print('---> Applying\033[1m {}\033[0m file..⏳\n'.format(file_name))
             time.sleep(1)
             kind_type = parse('$.tests[0].type').find(file_test)
             kind_name = parse('$.tests[0].name').find(file_test)
-            print('==> Running Tests on {} {}..\n'.format(kind_name[0].value,kind_type[0].value))
+            print('==> Running Tests on\033[1;36;10m {} {}\033[0m ..\n'.format(kind_name[0].value,kind_type[0].value))
             time.sleep(1)
             test_scenario = parse('$..asserts[*]').find(file_test)
             
