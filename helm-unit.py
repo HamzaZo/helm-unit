@@ -8,16 +8,18 @@ from jsonpath_ng import jsonpath, parse
 import time
 import sys
 import glob
+from ruamel.yaml.compat import StringIO
 
 
-class HelmUnit:        
+class Unit:        
     
-    def run_unit(self):
+    def initialize_unit(self):
         """
-        Helm Unit starter 
+        Helm Unit Initializer
         """
         self.initialize_arg_parser()
-        self.validator_pre_check()
+        self.check_version()
+        self.tests_loader()
         
     def initialize_arg_parser(self):
         """
@@ -29,7 +31,7 @@ class HelmUnit:
         self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-DIR]')
         self.arg_parser.add_argument('--chart',dest='chart',type=str,required=True,help='Specify chart directory')
         self.arg_parser.add_argument('--tests',dest='tests',type=str,required=True,help='Specify Unit tests directory')
-        self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.0-alpha}',help='Print version information')
+        self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.1}',help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
             self.chart = self.args_cli.chart
@@ -39,9 +41,26 @@ class HelmUnit:
             self.arg_parser.error(str(err))
               
     
-    def validator_pre_check(self):
+    def check_version(self):
         """
-        Validate cli prerequisites 
+        Validate helm binary version. 
+        """ 
+        try:
+            version = subprocess.Popen(['helm', 'version','--short'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            out,err = version.communicate()
+            output=out.decode('utf-8').split('+')
+            if which('helm') and output[0].startswith('v3'):
+                print('✔️ Detecting Helm 3 : PASS 🎯\n')
+            else:
+                print('❌ You are using an old version of Helm binary, the plugin support only Helm 3')
+                sys.exit(1)
+        except ValueError as err:
+            print('❌ Unable to find a valid executable Helm binary :: {}'.format(err))
+            sys.exit(1)
+            
+    def tests_loader(self):
+        """
+        Load Unit Tests from directory. 
         """
         try:
             if os.path.exists(self.tests) and os.path.isdir(self.tests):
@@ -62,21 +81,8 @@ class HelmUnit:
             print('❌ {}'.format(err))
             sys.exit(1)
             
-        try:
-            version = subprocess.Popen(['helm', 'version','--short'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            out,err = version.communicate()
-            output=out.decode('utf-8').split('+')
-            if which('helm') and output[0].startswith('v3'):
-                print('✔️ Detecting Helm 3 : PASS 🎯\n')
-            else:
-                print('❌ You are using an old version of Helm binary, the plugin support only Helm 3')
-                sys.exit(1)
-        except ValueError as err:
-            print('❌ Unable to find a valid executable Helm binary :: {}'.format(err))
-            sys.exit(1)
-            
         
-class Linter(HelmUnit):
+class ChartLinter(Unit):
     def __init__(self):
         super().__init__()
         
@@ -86,7 +92,7 @@ class Linter(HelmUnit):
         Chart syntax validator 
         """
         try:
-            self.run_unit()
+            self.initialize_unit()
             if "templates" in os.listdir(self.chart): 
                 print('✔️ Validating chart syntax..⏳\n')
                 time.sleep(1)
@@ -105,9 +111,27 @@ class Linter(HelmUnit):
         except Exception as err:
             print('❌ Failed to find a chart - linting failed :: {}'.format(err))
             sys.exit(1)
-  
 
-class UnitTest(Linter):
+
+
+class YamlDump(YAML):
+    """
+    Dump a YAML element, to take it as string and not to interpret the content of data.
+    """
+    
+    def dump(self, data, stream=None, **kw):
+        inefficient = False
+        if stream is None:
+            inefficient = True
+            stream = StringIO()
+        YAML.dump(self, data, stream, **kw)
+        if inefficient:
+            return stream.getvalue()
+
+
+
+
+class ChartTester(ChartLinter):
     def __init__(self):
         super().__init__()
             
@@ -142,14 +166,13 @@ class UnitTest(Linter):
             print('❌ rendering {} chart templates failed :: {}'.format(err,self.chart))
             sys.exit(1)  
      
-  
-     
      
     def run_test(self):
         """
-        Running Unit test on helm chart templates.
+        Running test on chart templates.
         """
         self.render_chart()
+        msg = ''
         for file_name,file_test in self.dic_tests.items():
             print('---> Applying\033[1m {}\033[0m file..⏳\n'.format(file_name))
             time.sleep(1)
@@ -168,45 +191,105 @@ class UnitTest(Linter):
                 continue
             
             try:
+                test_ok = 0
+                test_ko = 0
                 for k in test_scenario:
                     for item in k.value['values']:
                         find_spec = parse('$.' + item['path']).find(chartToTest)
                         if len(find_spec) == 0:  
                             print('❌ Errors : Could not find expected {} in templates \n'.format(item['path']))
+                            test_ko += 1
                             break
                         if k.value['type'] == 'equal':
                             if find_spec[0].value is not None and find_spec[0].value == item['value']:
                                 print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
                             else:
                                 print('❌ {} : FAILED \n'.format(k.value['name']))
+                                test_ko += 1
                         elif k.value['type'] == 'notEqual':
                             if find_spec[0].value is not None and find_spec[0].value != item['value']:
                                 print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
                             else:
                                 print('❌ {} : FAILED \n'.format(k.value['name']))
-                        elif k.value['type'] == 'contains':
-                            content_Array = [match.value for match in parse('$.'+ item['path']).find(chartToTest)]
-                            if item['value'] in content_Array:
-                                print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ko += 1
+                        elif k.value['type'] == 'contains': 
+                            typeItemval = type(item['value'])
+                            if typeItemval is str:
+                                self.content_Array = [match.value for match in parse('$.'+ item['path']).find(chartToTest)]
+                                if item['value'] in self.content_Array:
+                                    print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                    test_ok += 1
+                                else:
+                                    print('❌ {} : FAILED \n'.format(k.value['name']))
+                                    test_ko += 1
                             else:
-                                print('❌ {} : FAILED \n'.format(k.value['name']))
+                                yamldump = YamlDump()
+                                valuesToTest = yamldump.dump(parse('$.'+ item['path']).find(chartToTest)[0].value).split('\n')
+                                sizeVal = len(item['value'])
+                                for indexVal in range(sizeVal):
+                                    if item['value'][indexVal] in valuesToTest:
+                                        print('✔️ {} {}: PASS 🎯\n'.format(k.value['name'],item['value'][indexVal]))
+                                        test_ok += 1
+                                    else:
+                                        print('❌ {} {} : FAILED \n'.format(k.value['name'],item['value'][indexVal]))
+                                        test_ko += 1
+                        elif k.value['type'] == 'notContains': 
+                            typeItemval = type(item['value'])
+                            if typeItemval is str:
+                                self.content_Array = [match.value for match in parse('$.'+ item['path']).find(chartToTest)]
+                                if item['value'] not in self.content_Array:
+                                    print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                    test_ok += 1
+                                else:
+                                    print('❌ {} : FAILED \n'.format(k.value['name']))
+                                    test_ko += 1
+                            else:
+                                yamldump = YamlDump()
+                                valuesToTest = yamldump.dump(parse('$.'+ item['path']).find(chartToTest)[0].value).split('\n')
+                                sizeVal = len(item['value'])
+                                for indexVal in range(sizeVal):
+                                    if item['value'][indexVal] not in valuesToTest:
+                                        print('✔️ {} {}: PASS 🎯\n'.format(k.value['name'],item['value'][indexVal]))
+                                        test_ok += 1
+                                    else:
+                                        print('❌ {} {} : FAILED \n'.format(k.value['name'],item['value'][indexVal]))
+                                        test_ko += 1
                         elif k.value['type'] == 'isNotEmpty':
                             if find_spec[0].value is not None and len(find_spec[0].value) > 0:
                                 print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
                             else:
                                 print('❌ {} : FAILED \n'.format(k.value['name']))
+                                test_ko += 1
                         else:
                             print('❌ Unrecognized type {}  \n'.format(k.value['type']))
                     
             except Exception as err:
-                print('❌ testing {} chart templates failed :: {}'.format(err,self.chart))
-       
+                print('❌ testing {} template failed :: {}'.format(err,self.chart))
             
+            start_failed_color = '\033[1;31;10m' 
+            start_success_color = '\033[1;32;10m' 
+            end_color  = ' \033[0m '
+            
+            if test_ok > 0 and test_ko == 0:
+                test_color = start_success_color + file_name + end_color
+            else:
+                test_color = start_failed_color + file_name + end_color
+                
+            msg +=  test_color + '\n' +  'Number of executed tests : ' + str(test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(test_ok )+ '\n' + 'Number of failed tests : ' +  str(test_ko) +  '\n\n'
+    
+        print('\033[1;34;10m Unit Tests Summary\033[0m:\n')
+        print(msg)
+            
+       
         
 if __name__ == "__main__":
     yaml = YAML()
-    chart = UnitTest()
+    chart = ChartTester()
     chart.run_test()
-    print('🕸 Happy Helming testing day! 🕸')
+    print('🕸  Happy Helming testing day! 🕸')
     
-    
+
+
