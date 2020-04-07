@@ -280,7 +280,7 @@ class ChartTester(ChartLinter):
                 
             msg +=  test_color + '\n' +  'Number of executed tests : ' + str(test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(test_ok )+ '\n' + 'Number of failed tests : ' +  str(test_ko) +  '\n\n'
     
-        print('\033[1;34;10m Unit Tests Summary\033[0m:\n')
+        print('\033[1;34;10m==> Unit Tests Summary\033[0m:\n')
         print(msg)
             
        

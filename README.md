@@ -11,7 +11,7 @@
 ## Features
 + Validate & render chart locally without creating anything on your cluster.
 + Write unit test scenario in YAML file.
-+ Run all unit-test files defined in `unit-test` directory.
++ Run all unit-test files defined in directory.
 
 ## Roadmap 
 + create a pre-check which evaluate all preconisations of k8s
@@ -35,7 +35,7 @@ $ helm plugin install https://github.com/HamzaZo/helm-unit
 Install a specific version:
 
 ```
-$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.0-alpha
+$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.1
 ```
 
 You can also verify it's been installed using:
@@ -123,3 +123,4 @@ tests:
       values:
       - path: metadata.labels
 ```
+
