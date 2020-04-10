@@ -1,9 +1,9 @@
 tests:
   - description: Run the following test on Ingress 
     type: Ingress
-    name: front-ing
+    name: sample-front-ing
     asserts:
-    - name: check ingress path
+    - name: affirm that /api uri is exposed by ingress
       type: contains
       values:
       - path: spec.rules[*].http.paths[*].path

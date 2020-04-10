@@ -263,11 +263,18 @@ class ChartTester(ChartLinter):
                             else:
                                 print('❌ {} : FAILED \n'.format(k.value['name']))
                                 test_ko += 1
+                        elif k.value['type'] == 'isEmpty':
+                            if len(find_spec[0].value) == 0:
+                                print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
+                            else:
+                                print('❌ {} : FAILED \n'.format(k.value['name']))
+                                test_ko += 1
                         else:
                             print('❌ Unrecognized type {}  \n'.format(k.value['type']))
                     
             except Exception as err:
-                print('❌ testing {} template failed :: {}'.format(err,self.chart))
+                print('❌ Testing {}  :: {} failed'.format(err,self.chart))
             
             start_failed_color = '\033[1;31;10m' 
             start_success_color = '\033[1;32;10m' 
