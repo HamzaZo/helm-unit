@@ -73,7 +73,7 @@ optional arguments:
 
 
 | Assert | Params [Required] | type | Description | Example Usage  |
-|----------------|------------|---------|-------------|-------------|
+|----------------|----------------|---------|-------------|-------------|
 | `equal` |<font color='#ff0055'>values</font> A set of values to validate<br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map <br> string <br> string</font></pre>|Affirm the value of the specified **path** equal to the **value**.| <pre>type: equal <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
 | `notEqual` |<font color='#ff0055'>values</font> A set of values to validate <br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map <br>string<br>string| Affirm the value of the specified **path** **NOT** equal to the **value**. | <pre>type: notEqual <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
 | `contains` |<font color='#ff0055'>values</font> A set of values to validate <br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map<br>string<br>string| Asserting that the value of the specified **path** contains the content of the  **value**. | <pre>type: contains <br/>values:<br/>- path: spec.rules[\*].http.paths[*].path<br/>  value: /api</pre> |
