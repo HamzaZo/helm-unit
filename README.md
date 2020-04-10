@@ -59,10 +59,10 @@ usage: helm unit [CHART-DIR] [TEST-DIR]
 Run unit-test on chart locally without deloying the release.
 
 optional arguments:
-  -h, --help    show this help message and exit
-  --chart DIR   Specify chart directory
-  --tests TESTS Specify Unit tests directory
-  --version     Print version information
+  -h, --help          show this help message and exit
+  --chart CHART-PATH  Specify chart directory
+  --tests TESTS-PATH  Specify Unit tests directory
+  --version           Print version information
 
 ```
 
@@ -223,7 +223,7 @@ PASS 🎯
 
 ✔️ check that container image does not using latest as tag : PASS 🎯
 
-✔️ validate that serviceAccount Name exist : PASS 🎯
+❌ validate that serviceAccount Name exist : FAILED 
 
 ✔️ validate container port value : PASS 🎯
 
@@ -247,8 +247,8 @@ Number of failed tests : 0
 
 test-deployment.yaml  
 Number of executed tests : 7
-Number of success tests : 6
-Number of failed tests : 1
+Number of success tests : 5
+Number of failed tests : 2
 
 
 🕸  Happy Helming testing day! 🕸

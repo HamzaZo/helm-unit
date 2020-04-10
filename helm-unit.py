@@ -29,8 +29,8 @@ class Unit:
         """
         
         self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-DIR]')
-        self.arg_parser.add_argument('--chart',dest='chart',type=str,required=True,help='Specify chart directory')
-        self.arg_parser.add_argument('--tests',dest='tests',type=str,required=True,help='Specify Unit tests directory')
+        self.arg_parser.add_argument('--chart',metavar='CHART-PATH',dest='chart',type=str,required=True,help='Specify chart directory')
+        self.arg_parser.add_argument('--tests',metavar='TESTS-PATH',dest='tests',type=str,required=True,help='Specify Unit tests directory')
         self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.1}',help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
