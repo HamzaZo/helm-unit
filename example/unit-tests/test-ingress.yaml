@@ -1,0 +1,14 @@
+tests:
+  - description: Run the following test on Ingress 
+    type: Ingress
+    name: sample-front-ing
+    asserts:
+    - name: affirm that /api uri is exposed by ingress
+      type: contains
+      values:
+      - path: spec.rules[*].http.paths[*].path
+        value: /api
+    - name: check that metadata labels are set and not empty
+      type: isNotEmpty
+      values:
+      - path: metadata.labels

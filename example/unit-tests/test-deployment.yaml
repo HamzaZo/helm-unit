@@ -1,0 +1,37 @@
+tests:
+  - description: Run the following test on deployment 
+    type: Deployment
+    name: sample-front
+    asserts:
+    - name: check if we use the right number of replicas
+      type: equal
+      values:
+      - path: spec.replicas
+        value: 1 
+    - name: check that container image does not using latest as tag
+      type: notEqual
+      values:
+      - path: spec.template.spec.containers[0].image
+        value: nginx:latest
+    - name: validate that serviceAccount Name exist
+      type: isNotEmpty
+      values:
+      - path: spec.template.spec.serviceAccountName
+    - name: validate container port value
+      type: equal
+      values:
+      - path: spec.template.spec.containers[0].ports[0].containerPort
+        value: 80
+    - name: ensure that cpu/memory resources were set 
+      type: isNotEmpty
+      values:
+      - path: spec.template.spec.containers[0].resources
+    - name: check that deployment metadata do not contains this labels
+      type: notContains
+      values:
+      - path: metadata.labels
+        value: "app.kubernetes.io/managed-by: Helm"
+    - name: ensure that deployment does not have security context
+      type: isEmpty
+      values:
+      - path: spec.template.spec.containers[0].securityContext

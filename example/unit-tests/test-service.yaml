@@ -1,0 +1,27 @@
+tests:
+  - description: Run the following test on service 
+    type: Service
+    name: sample-front-svc
+    asserts:
+    - name: check if service listen on the right port
+      type: equal
+      values:
+      - path: spec.ports[0].port
+        value: 80
+    - name: ensure that service forward traffic to the right pod port
+      type: equal
+      values:
+      - path: spec.ports[0].targetPort
+        value: http
+    - name: verify that service is using these labels as selector
+      type: contains
+      values:
+      - path: metadata.labels
+        value: 
+        - "app.kubernetes.io/name: sample-front" 
+        - "app.kubernetes.io/instance: tmp"
+    - name: check if service is not exposed outside of the cluster
+      type: equal
+      values:
+      - path: spec.type
+        value: ClusterIP
