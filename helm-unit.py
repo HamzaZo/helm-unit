@@ -9,6 +9,8 @@ import time
 import sys
 import glob
 from ruamel.yaml.compat import StringIO
+from collections import OrderedDict
+
 
 
 class Unit:        
@@ -164,9 +166,41 @@ class ChartTester(ChartLinter):
                 sys.exit(1)
         except Exception as err:
             print('❌ rendering {} chart templates failed :: {}'.format(err,self.chart))
-            sys.exit(1)  
-     
-     
+            sys.exit(1)
+
+    @staticmethod
+    def assert_pre_check(asserts_test,kind_name):
+        """
+        validate asserts
+        :return: bool
+        """
+        start_failed_color = '\033[1;31;10m'
+        end_color = ' \033[0m '
+        exclude_assert_values = ['isNotEmpty','isEmpty']
+        if 'type' not in asserts_test.value:
+            print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
+            return False
+        if 'values' not in asserts_test.value:
+            print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert values'.format(kind_name))
+            return False
+        for item in asserts_test.value['values']:
+            if 'path' not in item:
+                print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
+                return False
+            if asserts_test.value['type'] not in exclude_assert_values:
+                if 'value' not in item:
+                    print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert value'.format(kind_name))
+                    return False
+            if asserts_test.value['type'] in exclude_assert_values:
+                if 'value' in item:
+                    print('❌  Test: \033[1;31;10m {} \033[0m contains unsupported value'.format(kind_name))
+                    return False
+
+        return True
+
+
+
+
     def run_test(self):
         """
         Running test on chart templates.
@@ -178,26 +212,29 @@ class ChartTester(ChartLinter):
             time.sleep(1)
             kind_type = parse('$.tests[0].type').find(file_test)
             kind_name = parse('$.tests[0].name').find(file_test)
-            print('==> Running Tests on\033[1;36;10m {} {}\033[0m ..\n'.format(kind_name[0].value,kind_type[0].value))
+            print('==> Running Tests on\033[1;36;10m {} {}\033[0m ..\n'.format(kind_name[0].value, kind_type[0].value))
             time.sleep(1)
             test_scenario = parse('$..asserts[*]').find(file_test)
-            
+
             chartToTest = ''
             try:
                 chartToTest = self.mydict[kind_type[0].value][kind_name[0].value]
             except Exception as err:
-                print('❌ {} with name {} does not exist in chart {} - testing failed '.format(kind_type[0].value, kind_name[0].value, self.chart))
-                print('For {} object found {} as names - Make sure you are using the right name!'.format(kind_type[0].value, [key for key in self.mydict[kind_type[0].value] ]))
+                print('❌ {} kind with name {} does not exist in chart {} - testing failed '.format(kind_type[0].value, kind_name[0].value, self.chart))
+                print('Found {} as names for kind {}  - Make sure you are using the right name!'.format([key for key in self.mydict[kind_type[0].value]],kind_type[0].value))
                 continue
-            
+
             try:
                 test_ok = 0
                 test_ko = 0
                 for k in test_scenario:
+                    check_test_syntax = self.assert_pre_check(k, k.value['name'])
+                    if not check_test_syntax:
+                        continue
                     for item in k.value['values']:
                         find_spec = parse('$.' + item['path']).find(chartToTest)
-                        if len(find_spec) == 0:  
-                            print('❌ Errors : Could not find expected {} in templates \n'.format(item['path']))
+                        if len(find_spec) == 0:
+                            print('❌ Errors : Could not find expected {} in {} \n'.format(item['path'], k.value['name']))
                             test_ko += 1
                             break
                         if k.value['type'] == 'equal':
@@ -214,7 +251,7 @@ class ChartTester(ChartLinter):
                             else:
                                 print('❌ {} : FAILED \n'.format(k.value['name']))
                                 test_ko += 1
-                        elif k.value['type'] == 'contains': 
+                        elif k.value['type'] == 'contains':
                             typeItemval = type(item['value'])
                             if typeItemval is str:
                                 self.content_Array = [match.value for match in parse('$.'+ item['path']).find(chartToTest)]
@@ -235,7 +272,7 @@ class ChartTester(ChartLinter):
                                     else:
                                         print('❌ {} {} : FAILED \n'.format(k.value['name'],item['value'][indexVal]))
                                         test_ko += 1
-                        elif k.value['type'] == 'notContains': 
+                        elif k.value['type'] == 'notContains':
                             typeItemval = type(item['value'])
                             if typeItemval is str:
                                 self.content_Array = [match.value for match in parse('$.'+ item['path']).find(chartToTest)]
@@ -276,15 +313,15 @@ class ChartTester(ChartLinter):
             except Exception as err:
                 print('❌ Testing {}  :: {} failed'.format(err,self.chart))
             
-            start_failed_color = '\033[1;31;10m' 
-            start_success_color = '\033[1;32;10m' 
+            start_failed_color = '\033[1;31;10m'
+            start_success_color = '\033[1;32;10m'
             end_color  = ' \033[0m '
             
             if test_ok > 0 and test_ko == 0:
                 test_color = start_success_color + file_name + end_color
             else:
                 test_color = start_failed_color + file_name + end_color
-                
+
             msg +=  test_color + '\n' +  'Number of executed tests : ' + str(test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(test_ok )+ '\n' + 'Number of failed tests : ' +  str(test_ko) +  '\n\n'
     
         print('\033[1;34;10m==> Unit Tests Summary\033[0m:\n')
