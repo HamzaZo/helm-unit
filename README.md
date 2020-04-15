@@ -19,7 +19,7 @@ Testing helm charts was always a challenge and the missing key word in the helm 
 + Create a pre-check which evaluates all preconisations of k8s.
 
 ## Prerequisite
-+ Helm v3 installed on a your system
++ Helm v3.1 or later installed on a your system
 + Access to k8s cluster
 
 
