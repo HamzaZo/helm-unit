@@ -55,10 +55,10 @@ class Unit:
                 if int(compatibility_version) > 0:
                     print('✔️ Detecting Helm 3 : PASS 🎯\n')
                 else:
-                    print('❌ You are using an old version of Helm binary, the plugin support only Helm 3')
+                    print('❌ You are using an incompatible version, see https://github.com/HamzaZo/helm-unit#prerequisite')
                     sys.exit(1)
         except ValueError as err:
-            print('❌ Unable to find a valid executable Helm binary :: {}'.format(err))
+            print('❌ Unable to find a supported helm version :: {}'.format(err))
             sys.exit(1)
             
     def tests_loader(self):
