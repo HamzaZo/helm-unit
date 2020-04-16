@@ -260,3 +260,10 @@ Number of failed tests : 2
 
 The idea of asserts type was inspired by [helm-unittest](https://github.com/lrills/helm-unittest)
 
+### Maintainers
+@HamzaZo
+@brahimk
+
+### Contribute
+
+PRs accepted.
