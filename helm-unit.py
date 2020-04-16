@@ -9,7 +9,6 @@ import time
 import sys
 import glob
 from ruamel.yaml.compat import StringIO
-from collections import OrderedDict
 
 
 
@@ -33,7 +32,7 @@ class Unit:
         self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-DIR]')
         self.arg_parser.add_argument('--chart',metavar='CHART-PATH',dest='chart',type=str,required=True,help='Specify chart directory')
         self.arg_parser.add_argument('--tests',metavar='TESTS-PATH',dest='tests',type=str,required=True,help='Specify Unit tests directory')
-        self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.1}',help='Print version information')
+        self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.2}',help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
             self.chart = self.args_cli.chart
@@ -51,13 +50,15 @@ class Unit:
             version = subprocess.Popen(['helm', 'version','--short'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out,err = version.communicate()
             output=out.decode('utf-8').split('+')
+            compatibility_version = output[0].split('.')[1]
             if which('helm') and output[0].startswith('v3'):
-                print('✔️ Detecting Helm 3 : PASS 🎯\n')
-            else:
-                print('❌ You are using an old version of Helm binary, the plugin support only Helm 3')
-                sys.exit(1)
+                if int(compatibility_version) > 0:
+                    print('✔️ Detecting Helm 3 : PASS 🎯\n')
+                else:
+                    print('❌ You are using an incompatible version, see https://github.com/HamzaZo/helm-unit#prerequisite')
+                    sys.exit(1)
         except ValueError as err:
-            print('❌ Unable to find a valid executable Helm binary :: {}'.format(err))
+            print('❌ Unable to find a supported helm version :: {}'.format(err))
             sys.exit(1)
             
     def tests_loader(self):
@@ -174,8 +175,6 @@ class ChartTester(ChartLinter):
         validate asserts
         :return: bool
         """
-        start_failed_color = '\033[1;31;10m'
-        end_color = ' \033[0m '
         exclude_assert_values = ['isNotEmpty','isEmpty']
         if 'type' not in asserts_test.value:
             print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
@@ -197,8 +196,6 @@ class ChartTester(ChartLinter):
                     return False
 
         return True
-
-
 
 
     def run_test(self):
