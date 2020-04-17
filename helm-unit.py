@@ -9,6 +9,7 @@ import time
 import sys
 import glob
 from ruamel.yaml.compat import StringIO
+import re
 
 
 
@@ -175,7 +176,7 @@ class ChartTester(ChartLinter):
         validate asserts
         :return: bool
         """
-        exclude_assert_values = ['isNotEmpty','isEmpty']
+        exclude_assert_values = ['isNotEmpty', 'isEmpty', 'matchValue', 'notMatchValue']
         if 'type' not in asserts_test.value:
             print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
             return False
@@ -299,6 +300,22 @@ class ChartTester(ChartLinter):
                                 test_ko += 1
                         elif k.value['type'] == 'isEmpty':
                             if len(find_spec[0].value) == 0:
+                                print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
+                            else:
+                                print('❌ {} : FAILED \n'.format(k.value['name']))
+                                test_ko += 1
+                        elif k.value['type'] == 'matchValue':
+                            value_to_match = re.search(item['pattern'], find_spec[0].value)
+                            if value_to_match and value_to_match is not None:
+                                print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
+                                test_ok += 1
+                            else:
+                                print('❌ {} : FAILED \n'.format(k.value['name']))
+                                test_ko += 1
+                        elif k.value['type'] == 'notMatchValue':
+                            value_to_match = re.search(item['pattern'], find_spec[0].value)
+                            if not value_to_match and value_to_match is not None:
                                 print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
