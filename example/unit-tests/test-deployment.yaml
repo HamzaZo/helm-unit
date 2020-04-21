@@ -9,10 +9,10 @@ tests:
       - path: spec.replicas
         value: 1 
     - name: check that container image does not using latest as tag
-      type: notEqual
+      type: notMatchValue
       values:
       - path: spec.template.spec.containers[0].image
-        value: nginx:latest
+        pattern: "latest$"
     - name: validate that serviceAccount Name exist
       type: isNotEmpty
       values:

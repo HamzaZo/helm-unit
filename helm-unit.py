@@ -324,7 +324,7 @@ class ChartTester(ChartLinter):
                                 test_ko += 1
                         elif k.value['type'] == 'notMatchValue':
                             value_to_match = re.search(item['pattern'], find_spec[0].value)
-                            if not value_to_match and value_to_match is not None:
+                            if not value_to_match and value_to_match is None:
                                 print('✔️ {} : PASS 🎯\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
