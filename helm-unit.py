@@ -26,10 +26,16 @@ class Unit:
         Create helm unit cli
         :return: args_cli
         """
-        self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.', prog='helm unit', usage='%(prog)s [CHART-DIR] [TEST-DIR]')
-        self.arg_parser.add_argument('--chart', metavar='CHART-PATH', dest='chart', type=str, required=True, help='Specify chart directory')
-        self.arg_parser.add_argument('--tests', metavar='TESTS-PATH', dest='tests', type=str, required=True, help='Specify Unit tests directory')
-        self.arg_parser.add_argument('--version', action='version', version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.2}', help='Print version information')
+        self.arg_parser = argparse.ArgumentParser(
+            description='Run unit-test on chart locally without deloying the release.', prog='helm unit',
+            usage='%(prog)s [CHART-DIR] [TEST-DIR]')
+        self.arg_parser.add_argument('--chart', metavar='CHART-PATH', dest='chart', type=str, required=True,
+                                     help='Specify chart directory')
+        self.arg_parser.add_argument('--tests', metavar='TESTS-PATH', dest='tests', type=str, required=True,
+                                     help='Specify Unit tests directory')
+        self.arg_parser.add_argument('--version', action='version',
+                                     version='BuildInfo{Timestamp:' + str(datetime.now()) + ', version: 0.1.2}',
+                                     help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
             self.chart = self.args_cli.chart
@@ -96,7 +102,8 @@ class ChartLinter(Unit):
             if "templates" in os.listdir(self.chart): 
                 print('✔️ Validating chart syntax..⏳\n')
                 time.sleep(1)
-                check_syntax = subprocess.Popen(['helm', 'lint', self.chart], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                check_syntax = subprocess.Popen(['helm', 'lint', self.chart], stdout=subprocess.PIPE,
+                                                stderr=subprocess.STDOUT)
                 out_syn,out_err = check_syntax.communicate()
                 if check_syntax.returncode == 0:
                     msg = out_syn.decode('utf-8').replace('[INFO] Chart.yaml: icon is recommended','PASS 🎯').replace('1 chart(s) linted, 0 chart(s) failed','').strip() 
@@ -138,7 +145,8 @@ class ChartTester(ChartLinter):
         """
         self.linting_chart()
         try:
-            release = subprocess.Popen(['helm', 'template', 'tmp', self.chart, '--validate', '--is-upgrade'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            release = subprocess.Popen(['helm', 'template', 'tmp', self.chart, '--validate', '--is-upgrade'],
+                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out_rel,err_rel = release.communicate()
             output = out_rel.decode('utf-8')
             split_manifests = output.split('---')
@@ -222,8 +230,11 @@ class ChartTester(ChartLinter):
             try:
                 chartToTest = self.mydict[kind_type[0].value][kind_name[0].value]
             except Exception as err:
-                print('❌ {} kind with name {} does not exist in chart {} - testing failed '.format(kind_type[0].value, kind_name[0].value, self.chart))
-                print('Found {} as names for kind {}  - Make sure you are using the right name!'.format([key for key in self.mydict[kind_type[0].value]],kind_type[0].value))
+                print('❌ {} kind with name {} does not exist in chart {} - testing failed '.format(kind_type[0].value,
+                                                                                                   kind_name[0].value,
+                                                                                                   self.chart))
+                print('Found {} as names for kind {}  - Make sure you are using the right name!'.format(
+                    [key for key in self.mydict[kind_type[0].value]], kind_type[0].value))
                 continue
 
             try:
@@ -236,7 +247,8 @@ class ChartTester(ChartLinter):
                     for item in k.value['values']:
                         find_spec = parse('$.' + item['path']).find(chartToTest)
                         if len(find_spec) == 0:
-                            print('❌ Errors : Could not find expected {} in {} \n'.format(item['path'], k.value['name']))
+                            print(
+                                '❌ Errors : Could not find expected {} in {} \n'.format(item['path'], k.value['name']))
                             test_ko += 1
                             break
                         if k.value['type'] == 'equal':
@@ -340,8 +352,9 @@ class ChartTester(ChartLinter):
             else:
                 test_color = start_failed_color + file_name + end_color
 
-            msg +=  test_color + '\n' +  'Number of executed tests : ' + str(test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(test_ok )+ '\n' + 'Number of failed tests : ' +  str(test_ko) +  '\n\n'
-    
+            msg += test_color + '\n' + 'Number of executed tests : ' + str(
+                test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(
+                test_ok) + '\n' + 'Number of failed tests : ' + str(test_ko) + '\n\n'
         print('\033[1;34;10m==> Unit Tests Summary\033[0m:\n')
         print(msg)
             
@@ -352,6 +365,3 @@ if __name__ == "__main__":
     chart = ChartTester()
     chart.run_test()
     print('🕸  Happy Helming testing day! 🕸')
-    
-
-
