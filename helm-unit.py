@@ -4,7 +4,7 @@ from shutil import which
 import subprocess  
 from datetime import datetime
 from ruamel.yaml import YAML
-from jsonpath_ng import jsonpath, parse
+from jsonpath_ng import parse
 import time
 import sys
 import glob
@@ -12,9 +12,7 @@ from ruamel.yaml.compat import StringIO
 import re
 
 
-
 class Unit:        
-    
     def initialize_unit(self):
         """
         Helm Unit Initializer
@@ -26,14 +24,12 @@ class Unit:
     def initialize_arg_parser(self):
         """
         Create helm unit cli
-        
         :return: args_cli
         """
-        
-        self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.',prog='helm unit',usage='%(prog)s [CHART-DIR] [TEST-DIR]')
-        self.arg_parser.add_argument('--chart',metavar='CHART-PATH',dest='chart',type=str,required=True,help='Specify chart directory')
-        self.arg_parser.add_argument('--tests',metavar='TESTS-PATH',dest='tests',type=str,required=True,help='Specify Unit tests directory')
-        self.arg_parser.add_argument('--version',action='version',version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.2}',help='Print version information')
+        self.arg_parser = argparse.ArgumentParser(description='Run unit-test on chart locally without deloying the release.', prog='helm unit', usage='%(prog)s [CHART-DIR] [TEST-DIR]')
+        self.arg_parser.add_argument('--chart', metavar='CHART-PATH', dest='chart', type=str, required=True, help='Specify chart directory')
+        self.arg_parser.add_argument('--tests', metavar='TESTS-PATH', dest='tests', type=str, required=True, help='Specify Unit tests directory')
+        self.arg_parser.add_argument('--version', action='version', version='BuildInfo{Timestamp:' + str(datetime.now())+ ', version: 0.1.2}', help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
             self.chart = self.args_cli.chart
@@ -122,7 +118,6 @@ class YamlDump(YAML):
     """
     Dump a YAML element, to take it as string and not to interpret the content of data.
     """
-    
     def dump(self, data, stream=None, **kw):
         inefficient = False
         if stream is None:
@@ -131,8 +126,6 @@ class YamlDump(YAML):
         YAML.dump(self, data, stream, **kw)
         if inefficient:
             return stream.getvalue()
-
-
 
 
 class ChartTester(ChartLinter):
@@ -197,7 +190,9 @@ class ChartTester(ChartLinter):
             for match_item in match_types[asserts_test.value['type']]:
                 for item in asserts_test.value['values']:
                     if match_item not in item:
-                        print('❌  Test: \033[1;31;10m {} \033[0m does not have \033[1;31;10m{}\033[0m in assert type'.format(kind_name, match_item))
+                        print(
+                            '❌  Test: \033[1;31;10m {} \033[0m does not have \033[1;31;10m{}\033[0m in assert type'.format(
+                                kind_name, match_item))
                         return False
                     for val in item :
                         if val not in match_types[asserts_test.value['type']]:
