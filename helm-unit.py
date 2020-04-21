@@ -176,26 +176,35 @@ class ChartTester(ChartLinter):
         validate asserts
         :return: bool
         """
-        exclude_assert_values = ['isNotEmpty', 'isEmpty', 'matchValue', 'notMatchValue']
+        match_types = {
+            "equal": ["path", "value"],
+            "notEqual": ["path", "value"],
+            "contains": ["path", "value"],
+            "notContains": ["path", "value"],
+            "matchValue": ["path", "pattern"],
+            "notMatchValue": ["path", "pattern"],
+            "isEmpty": ["path"],
+            "isNotEmpty": ["path"]
+        }
+
         if 'type' not in asserts_test.value:
             print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
             return False
         if 'values' not in asserts_test.value:
             print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert values'.format(kind_name))
             return False
-        for item in asserts_test.value['values']:
-            if 'path' not in item:
-                print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert type'.format(kind_name))
-                return False
-            if asserts_test.value['type'] not in exclude_assert_values:
-                if 'value' not in item:
-                    print('❌  Test: \033[1;31;10m {} \033[0m does not have an assert value'.format(kind_name))
-                    return False
-            if asserts_test.value['type'] in exclude_assert_values:
-                if 'value' in item:
-                    print('❌  Test: \033[1;31;10m {} \033[0m contains unsupported value'.format(kind_name))
-                    return False
-
+        if asserts_test.value['type'] in match_types:
+            for match_item in match_types[asserts_test.value['type']]:
+                for item in asserts_test.value['values']:
+                    if match_item not in item:
+                        print('❌  Test: \033[1;31;10m {} \033[0m does not have \033[1;31;10m{}\033[0m in assert type'.format(kind_name, match_item))
+                        return False
+                    for val in item :
+                        if val not in match_types[asserts_test.value['type']]:
+                            print('❌  Test: \033[1;31;10m {} \033[0m contains unsupported value \033[1;31;10m {} '
+                                  '\033[0m - We only support {} '.format(kind_name,val,match_types[
+                                asserts_test.value['type']]))
+                            return False
         return True
 
 
