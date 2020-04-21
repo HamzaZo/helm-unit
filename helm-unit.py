@@ -1,7 +1,7 @@
 import argparse
 import os
 from shutil import which
-import subprocess  
+import subprocess
 from datetime import datetime
 from ruamel.yaml import YAML
 from jsonpath_ng import parse
@@ -12,7 +12,7 @@ from ruamel.yaml.compat import StringIO
 import re
 
 
-class Unit:        
+class Unit:   
     def initialize_unit(self):
         """
         Helm Unit Initializer
@@ -20,7 +20,7 @@ class Unit:
         self.initialize_arg_parser()
         self.check_version()
         self.tests_loader()
-        
+
     def initialize_arg_parser(self):
         """
         Create helm unit cli
@@ -43,12 +43,11 @@ class Unit:
             return self.args_cli
         except IOError as err:
             self.arg_parser.error(str(err))
-              
     
     def check_version(self):
         """
-        Validate helm binary version. 
-        """ 
+        Validate helm binary version.
+        """
         try:
             version = subprocess.Popen(['helm', 'version','--short'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out,err = version.communicate()
@@ -60,8 +59,8 @@ class Unit:
                 else:
                     print('❌ You are using an incompatible version, see https://github.com/HamzaZo/helm-unit#prerequisite')
                     sys.exit(1)
-        except ValueError as err:
-            print('❌ Unable to find a supported helm version :: {}'.format(err))
+        except ValueError as errv:
+            print('❌ Unable to find a supported helm version :: {}'.format(errv))
             sys.exit(1)
             
     def tests_loader(self):
