@@ -37,13 +37,15 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: create kind cluster
       uses: helm/kind-action@v1.0.0-rc.1
+      with:
+         wait: 2m
     - name: test cluster
       run: |
         kubectl cluster-info
         kubectl get pods -n kube-system
     - name: test python
       run: |
-        python src/helm-unit.py --chart example/sample-front --tests/unit-tests
+        python src/helm-unit.py --chart example/sample-front --tests /unit-tests
     - name: Run test
       run: |
         .build/${{ matrix.os }}-${{ matrix.python-version }}/helm-unit -h
