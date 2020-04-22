@@ -38,4 +38,8 @@ jobs:
     - name: Create python binary
       run: |
         python setup.py build
+    - name: Run test
+      run: |
+        ls -la
+        ls -la build/
 
