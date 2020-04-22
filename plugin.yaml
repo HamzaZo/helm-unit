@@ -2,7 +2,7 @@ name: "unit"
 version: "0.1.2"
 usage: "Run unit test on helm chart templates"
 description: |-
-  Run unit-test on a chart locally without deloying the release.
+  Run unit-test on a chart locally without deploying the release.
 ignoreFlags: false
 command: "$HELM_PLUGIN_DIR/bin/helm-unit"
 
