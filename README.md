@@ -74,13 +74,14 @@ optional arguments:
 
 | Assert | Params [Required] | type | Description | Example Usage  |
 |----------------|----------------|---------|-------------|-------------|
-| `equal` |<font color='#ff0055'>values</font> A set of values to validate<br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map <br> string <br> string</font></pre>|Affirm the value of the specified **path** equal to the **value**.| <pre>type: equal <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
-| `notEqual` |<font color='#ff0055'>values</font> A set of values to validate <br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map <br>string<br>string| Affirm the value of the specified **path** **NOT** equal to the **value**. | <pre>type: notEqual <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
-| `contains` |<font color='#ff0055'>values</font> A set of values to validate <br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map<br>string<br>string| Asserting that the value of the specified **path** contains the content of the  **value**. | <pre>type: contains <br/>values:<br/>- path: metadata.labels<br/>  value: /api</pre> |
-| `notContains` |<font color='#ff0055'>values</font> A set of values to validate <br/><font color='#1a75ff'>path</font> The path to assert<br/><font color='#1a75ff'>value</font> The expected value |map<br>string<br>string| Asserting that the value of the specified **path** does **NOT** contains the content of the  **value**. | <pre>type: notContains <br/>values:<br/>- path: metadata.labels<br/>  value:<br/>  - 'app.kubernetes.io/name: front' </pre> |
-| `isEmpty` |<font color='#ff0055'>values</font> A set of values to validate. <br/><font color='#1a75ff'>path</font> The path to assert<br/> |map<br>string| Assert the value of the specified **path** is empty| <pre>type: isEmpty <br/>values:<br/>- path: metadata.labels</pre> |
-| `isNotEmpty` |<font color='#ff0055'>values</font> A set of values to validate. <br/><font color='#1a75ff'>path</font> The path to assert<br/>|map<br>string| Assert the value of the specified **path** is **NOT** empty. | <pre>type: isNotEmpty <br/>values:<br/>- path: spec.template.spec.serviceAccountName</pre> |
-
+| `equal` |**values** A set of values to validate<br/> **path** The path to assert<br/>**value** The expected value |map <br> string <br> string |Affirm the value of the specified **path** equal to the **value**.| <pre>type: equal <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
+| `notEqual` |**values** A set of values to validate <br/>**path** The path to assert<br/>**value** The expected value |map <br>string<br>string| Affirm the value of the specified **path** **NOT** equal to the **value**. | <pre>type: notEqual <br/>values:<br/>- path: spec.replicas<br/>  value: 1</pre> |
+| `contains` |**values** A set of values to validate <br/>**path** The path to assert<br/>**value** The expected value |map<br>string<br>string| Asserting that the value of the specified **path** contains the content of the  **value**. | <pre>type: contains <br/>values:<br/>- path: metadata.labels<br/>  value: /api</pre> |
+| `notContains` |**values** A set of values to validate <br/>**path** The path to assert<br/>**value** The expected value |map<br>string<br>string| Asserting that the value of the specified **path** does **NOT** contains the content of the  **value**. | <pre>type: notContains <br/>values:<br/>- path: metadata.labels<br/>  value:<br/>  - 'app.kubernetes.io/name: front' </pre> |
+| `isEmpty` |**values** A set of values to validate. <br/>**path** The path to assert<br/> |map<br>string| Assert the value of the specified **path** is empty| <pre>type: isEmpty <br/>values:<br/>- path: metadata.labels</pre> |
+| `isNotEmpty` |**values** A set of values to validate. <br/>**path** The path to assert<br/>|map<br>string| Assert the value of the specified **path** is **NOT** empty. | <pre>type: isNotEmpty <br/>values:<br/>- path: spec.template.spec.serviceAccountName</pre> |
+| `notMatchValue` |**values** A set of values to validate <br/>**path** The path to assert<br/>**pattern** The regex pattern to match |map<br>string<br>string| Asserting that the value of the specified **path** match **pattern**. | <pre>type: notMatchValue <br/>values:<br/>- path: metadata.labels<br/>  pattern: </pre> |
+| `matchValue` |**values** A set of values to validate <br/>**path** The path to assert<br/>**pattern** The regex pattern to match |map<br>string<br>string| Asserting that the value of the specified **path** does **NOT** match **pattern**. | <pre>type: matchValue <br/>values:<br/>- path: metadata.labels<br/>  pattern:  </pre> |
 
 ### Example Use Case
 
@@ -102,10 +103,10 @@ tests:
       - path: spec.replicas
         value: 1 
     - name: check that container image does not using latest as tag
-      type: notEqual
+      type: notMatchValue
       values:
       - path: spec.template.spec.containers[0].image
-        value: nginx:latest
+        pattern: latest$
     - name: validate that serviceAccount Name exist
       type: isNotEmpty
       values:
@@ -128,6 +129,7 @@ tests:
       type: isEmpty
       values:
       - path: spec.template.spec.containers[0].securityContext
+
 
 ```
 
@@ -260,9 +262,6 @@ Number of failed tests : 2
 
 The idea of asserts type was inspired by [helm-unittest](https://github.com/lrills/helm-unittest)
 
-### Maintainers
-@HamzaZo
-@brahimk
 
 ### Contribute
 
