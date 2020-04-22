@@ -40,6 +40,5 @@ jobs:
         python setup.py build
     - name: Run test
       run: |
-        ls -la
-        ls -la build/
+        .build/${{ matrix.os }}-${{ matrix.python-version }}/helm-unit -h
 
