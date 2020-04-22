@@ -44,7 +44,7 @@ jobs:
         kubectl get pods -n kube-system
     - name: test python
       run: |
-        python src/helm-unit.py --chart example/sample-front --tests /unit-tests
+        python src/helm-unit.py --chart example/sample-front --tests example/unit-tests
     - name: Run test
       run: |
         .build/${{ matrix.os }}-${{ matrix.python-version }}/helm-unit -h
