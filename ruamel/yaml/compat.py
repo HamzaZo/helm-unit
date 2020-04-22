@@ -45,28 +45,22 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     def utf8(s):
-        # type: (str) -> str
         return s
 
     def to_str(s):
-        # type: (str) -> str
         return s
 
     def to_unicode(s):
-        # type: (str) -> str
         return s
 
 else:
     def utf8(s):
-        # type: (unicode) -> str
         return s.encode('utf-8')
 
     def to_str(s):
-        # type: (str) -> str
         return str(s)
 
     def to_unicode(s):
-        # type: (str) -> unicode
         return unicode(s)    # NOQA
 
 if PY3:
