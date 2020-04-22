@@ -74,7 +74,7 @@ class Unit:
                     self.dic_tests = {}
                     for file_name in files:
                         with open(file_name, 'r') as stream:
-                            test_content = yaml.load(stream)                        
+                            test_content = yaml.load(stream)                    
                         self.dic_tests[file_name.replace(self.tests +'/', '')] = test_content
                 else:
                     print(' ❌ No yaml test file was found in {} directory'.format(self.tests))
@@ -85,13 +85,11 @@ class Unit:
         except Exception as err:
             print('❌ {}'.format(err))
             sys.exit(1)
-            
         
 class ChartLinter(Unit):
     def __init__(self):
         super().__init__()
         
-    
     def linting_chart(self):
         """
         Chart syntax validator 
@@ -357,7 +355,6 @@ class ChartTester(ChartLinter):
         print('\033[1;34;10m==> Unit Tests Summary\033[0m:\n')
         print(msg)
             
-       
         
 if __name__ == "__main__":
     yaml = YAML()
