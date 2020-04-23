@@ -34,6 +34,8 @@ jobs:
       run: |
         python setup.py build
         tar -C build/exe.linux-x86_64-3.7 -cvf helm-unit_0.1.3_Linux_x86_64.tar.gz .
+        du -sh build/exe.linux-x86_64-3.7
+        du -sh helm-unit_0.1.3_Linux_x86_64.tar.gz
 
     - name: Build asset release for macox
       if: matrix.os == 'macos-latest'
@@ -42,6 +44,7 @@ jobs:
         tar -C build/exe.macosx-10.13-x86_64-3.7 -cvf helm-unit_0.1.3_Darwin_x86_64.tar.gz .
 
     - name: Create Release
+      if: matrix.os == 'ubuntu-latest'
       id: create_release
       uses: actions/create-release@v1
       env:
