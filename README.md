@@ -1,5 +1,5 @@
 [![Licence](https://img.shields.io/badge/licence-Apache%202.0-green)]()
-[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.1-brightgreen)]()
+[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.2-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-v3.7-green)]()
 
 # helm-unit 
