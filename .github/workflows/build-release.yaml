@@ -31,8 +31,13 @@ jobs:
 
     - name: Create release
       run: |
-        echo ::set-env name=FOO::$(uname -m)
-        echo FOO
+        export UNAME=$(uname -m)
+        export ARCH=$(uname -s)
+        echo "::set-env name=NEW_UNAME::$UNAME
+        echo "::set-env name=NEW_ARCH::$ARCH
+    - name: Create release
+        run: |
+          touch file_${{ env.NEW_UNAME }}_${{ env.NEW_ARCH }}
 
 
 
