@@ -29,10 +29,37 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Create release
+    - name: Build asset release for ubuntu
       if: matrix.os == 'ubuntu-latest'
       run: |
         python setup.py build
         tar -C build/exe.linux-x86_64-3.7 -cvf helm-unit_0.1.3_Linux_x86_64.tar.gz .
-        ls -l
+
+    - name: Build asset release for macox
+      if: matrix.os == 'macos-latest'
+      run: |
+        python setup.py build
+        tar -C build/exe.macosx-10.13-x86_64-3.7 -cvf helm-unit_0.1.3_Darwin_x86_64.tar.gz .
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: true
+    - name: Upload Release Asset
+      if: matrix.os == 'ubuntu-latest'
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./helm-unit_0.1.3_Linux_x86_64.tar.gz
+        asset_name: helm-unit_0.1.3_Linux_x86_64.tar.gz
+        asset_content_type: application/zip
 
