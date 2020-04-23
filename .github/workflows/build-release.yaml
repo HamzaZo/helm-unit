@@ -32,7 +32,7 @@ jobs:
     - name: Create release
       run: |
         python setup.py build
-        touch helm-unit_0.1.2_$(uname -s)_$(uname -m)
+        touch helm-unit_0.1.2_${{uname -s}}_${{uname -m}}
 
 
 
