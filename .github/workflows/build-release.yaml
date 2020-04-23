@@ -31,13 +31,13 @@ jobs:
 
     - name: Create release
       run: |
-        export UNAME=$(uname -m)
-        export ARCH=$(uname -s)
-        echo "::set-env name=NEW_UNAME::$UNAME
-        echo "::set-env name=NEW_ARCH::$ARCH
+        export ARCH=$(uname -m)
+        export OS=$(uname -s)
+        echo "::set-env name=ARCH::ARCH
+        echo "::set-env os=OS::$OS
     - name: Create release
       run: |
-        tar czvf helm-unit_0.1.2_${{ env.NEW_UNAME }}_${{ env.NEW_ARCH }}.tar.gz *
+        tar czvf helm-unit_0.1.2_${{ env.OS }}_${{ env.ARCH }}.tar.gz *
 
 
 
