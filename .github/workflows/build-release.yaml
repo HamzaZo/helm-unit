@@ -32,7 +32,8 @@ jobs:
     - name: Create release
       run: |
         python setup.py build
-        ./build/exe.linux-x86_64-3.7/helm-unit -h
+        uname -s
+        uname -m
 
 
 
