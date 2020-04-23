@@ -13,11 +13,9 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    env:
-      KERNEL: $(uname -s)
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macosx-10.13]
         python-version: [3.7]
 
     steps:
@@ -31,11 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Create release
-      run: |
-        python setup.py build
-        ls -l build/exe.${KERNEL}-x86_64-3.7
-        ls -l
+
 
 
 
