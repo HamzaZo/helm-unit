@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macosx-10.13]
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.7]
 
     steps:
@@ -29,8 +29,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-
-
-
-
+    - name: Create release
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        python setup.py build
+        tar -C build/exe.linux-x86_64-3.7 -cvf helm-unit_0.1.3_Linux_x86_64.tar.gz .
+        ls -l
 
