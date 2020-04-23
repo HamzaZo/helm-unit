@@ -36,7 +36,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: create kind cluster
-      uses: helm/kind-action@v1.0.0-rc.1
+      uses: engineerd/setup-kind@v0.3.0
 
     - name: test cluster connectivity
       run: |
