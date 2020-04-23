@@ -31,10 +31,10 @@ jobs:
 
     - name: Create release
       run: |
-        export ARCH=$(uname -m)
-        export OS=$(uname -s)
-        echo "::set-env name=MyARCHI::$ARCH
-        echo "::set-env name=MyOS::$OS
+        export MyARCHI=$(uname -m)
+        export MyOS=$(uname -s)
+        echo "::set-env name=MyARCHI::$MyARCHI
+        echo "::set-env name=MyOS::$MyOS
     - name: Create release
       run: |
         tar czvf helm-unit_0.1.2_${{ env.MyOS }}_${{ env.MyARCHI }}.tar.gz *
