@@ -37,12 +37,6 @@ jobs:
     - name: create kind cluster
       if: matrix.os == 'ubuntu-latest'
       uses: engineerd/setup-kind@v0.3.0
-    - name: create kind cluster
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install kind
-        brew install kubectl
-        kind create cluster --name kind --wait 300s -v 1
     - name: test cluster connectivity
       run: |
         kubectl cluster-info
