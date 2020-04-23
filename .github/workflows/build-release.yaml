@@ -31,8 +31,8 @@ jobs:
 
     - name: Create release
       run: |
-        python setup.py build
-        touch helm-unit_0.1.2_${{uname -s}}_${{uname -m}}
+        echo ::set-env name=FOO::$(uname -m)
+        echo $FOO
 
 
 
