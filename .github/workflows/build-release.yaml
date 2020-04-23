@@ -37,7 +37,8 @@ jobs:
         echo "::set-env name=NEW_ARCH::$ARCH
     - name: Create release
         run: |
-          touch file_${{ env.NEW_UNAME }}_${{ env.NEW_ARCH }}
+          mkdir file-${{ env.NEW_ARCH }}
+          ls
 
 
 
