@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
 
     steps:
@@ -35,8 +35,11 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: create kind cluster
+      if: matrix.os == 'ubuntu-latest'
       uses: engineerd/setup-kind@v0.3.0
-
+    - name: create kind cluster
+      if: matrix.os == 'macos-latest'
+      run: brew install kind
     - name: test cluster connectivity
       run: |
         kubectl cluster-info
@@ -44,5 +47,3 @@ jobs:
     - name: test helm unit
       run: |
         python src/helm-unit.py --chart example/sample-front --tests example/unit-tests
-
-
