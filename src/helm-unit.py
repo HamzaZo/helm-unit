@@ -34,7 +34,7 @@ class Unit:
         self.arg_parser.add_argument('--tests', metavar='TESTS-PATH', dest='tests', type=str, required=True,
                                      help='Specify Unit tests directory')
         self.arg_parser.add_argument('--version', action='version',
-                                     version='BuildInfo{Timestamp:' + str(datetime.now()) + ', version: 0.1.2}',
+                                     version='BuildInfo{Timestamp:' + str(datetime.now()) + ', version: 0.1.3}',
                                      help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
