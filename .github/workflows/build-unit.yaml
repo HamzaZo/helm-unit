@@ -42,7 +42,7 @@ jobs:
       run: |
         brew install kind
         brew install kubectl
-        kind create cluster --wait 300s -v 1
+        kind create cluster --name kind --wait 300s -v 1
     - name: test cluster connectivity
       run: |
         kubectl cluster-info
