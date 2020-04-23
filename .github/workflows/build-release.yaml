@@ -33,11 +33,11 @@ jobs:
       run: |
         export ARCH=$(uname -m)
         export OS=$(uname -s)
-        echo "::set-env name=ARCH::ARCH
+        echo "::set-env name=ARCH::$ARCH
         echo "::set-env os=OS::$OS
     - name: Create release
       run: |
-        tar czvf helm-unit_0.1.2_${{ env.OS }}_${{ env.ARCH }}.tar.gz *
+        tar czvf helm-unit_0.1.2_${{ env.os }}_${{ env.name }}.tar.gz *
 
 
 
