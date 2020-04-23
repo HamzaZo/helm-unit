@@ -43,5 +43,6 @@ jobs:
         kubectl cluster-info
         kubectl get pods -n kube-system
     - name: test helm unit
+      if: matrix.os == 'ubuntu-latest'
       run: |
         python src/helm-unit.py --chart example/sample-front --tests example/unit-tests
