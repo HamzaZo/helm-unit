@@ -38,6 +38,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       uses: engineerd/setup-kind@v0.3.0
     - name: test cluster connectivity
+      if: matrix.os == 'ubuntu-latest'
       run: |
         kubectl cluster-info
         kubectl get pods -n kube-system
