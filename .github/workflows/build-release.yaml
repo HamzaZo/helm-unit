@@ -37,7 +37,7 @@ jobs:
         echo "::set-env name=NEW_ARCH::$ARCH
     - name: Create release
       run: |
-        mkdir file_${{ env.NEW_UNAME }}_${{ env.NEW_ARCH }}
+        tar czvf helm-unit_0.1.2_${{ env.NEW_UNAME }}_${{ env.NEW_ARCH }}.tar.gz *
 
 
 
