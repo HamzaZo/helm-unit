@@ -33,6 +33,7 @@ jobs:
 
     - name: Create release
       run: |
+        python setup.py build
         cd build/exe.${KERNEL}-x86_64-3.7
         ls
 
