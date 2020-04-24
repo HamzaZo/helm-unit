@@ -32,7 +32,7 @@ download_url=$(curl --silent --show-error \
                     --location \
                     --request GET \
                     "https://api.github.com/repos/HamzaZo/helm-unit/releases/$github_tag_id" \
-                    | jq --raw-output ".assets[] | select(.name==\"helm-unit_${version}_${os}_${arch}.tar.gz\").url")
+                    | jq --raw-output ".assets[] | select(.name==\"helm-unit_${version}_${os}_${arch}.zip\").url")
 
 # Get GitHub's S3 redirect URL
 # Why not just curl's built-in "--location" option to auto-redirect? Because curl then wants to include all the original
@@ -48,12 +48,12 @@ redirect_url=$(curl --silent --show-error \
 # Finally download the actual binary
 curl  --silent --show-error \
           --header "Accept: application/octet-stream" \
-          --output "helm-unit_${version}_${os}_${arch}.tar.gz" \
+          --output "helm-unit_${version}_${os}_${arch}.zip" \
           --request GET \
           "$redirect_url"
 
 # Install bin
-rm -rf bin && mkdir bin && tar xzf helm-unit_${version}_${os}_${arch}.tar.gz -C bin >/dev/null 2>&1 && rm -f helm-unit_${version}_${os}_${arch}.tar.gz
+rm -rf bin && mkdir bin && unzip helm-unit_${version}_${os}_${arch}.zip -d bin >/dev/null 2>&1 && rm -f helm-unit_${version}_${os}_${arch}.zip
  
 
 echo "helm-unit ${version} is correctly installed."
