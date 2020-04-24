@@ -34,7 +34,7 @@ class Unit:
         self.arg_parser.add_argument('--tests', metavar='TESTS-PATH', dest='tests', type=str, required=True,
                                      help='Specify Unit tests directory')
         self.arg_parser.add_argument('--version', action='version',
-                                     version='BuildInfo{Timestamp:' + str(datetime.now()) + ', version: 0.1.2}',
+                                     version='BuildInfo{Timestamp:' + str(datetime.now()) + ', version: 0.1.3}',
                                      help='Print version information')
         try:
             self.args_cli = self.arg_parser.parse_args()
@@ -52,7 +52,7 @@ class Unit:
         try:
             version = subprocess.Popen(['helm', 'version', '--short'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out, err = version.communicate()
-            output = out.decode('utf-8').split('+')
+            output = str(out, 'utf-8').split('+')
             compatibility_version = output[0].split('.')[1]
             if which('helm') and output[0].startswith('v3'):
                 if int(compatibility_version) > 0:
@@ -106,11 +106,11 @@ class ChartLinter(Unit):
                                                 stderr=subprocess.STDOUT)
                 out_syn, out_err = check_syntax.communicate()
                 if check_syntax.returncode == 0:
-                    msg = out_syn.decode('utf-8').replace('[INFO] Chart.yaml: icon is recommended', 'PASS 🎯').replace(
+                    msg = str(out_syn, 'utf-8').replace('[INFO] Chart.yaml: icon is recommended', 'PASS 🎯').replace(
                         '1 chart(s) linted, 0 chart(s) failed', '').strip()
                     print('{} \n'.format(msg))
                 else:
-                    msg = out_syn.decode('utf-8').replace('[INFO] Chart.yaml: icon is recommended', '').replace(
+                    msg = str(out_syn, 'utf-8').replace('[INFO] Chart.yaml: icon is recommended', '').replace(
                         'Error: 1 chart(s) linted, 1 chart(s) failed', '').strip()
                     print('❌ {} \n'.format(msg))
                     sys.exit(1)
@@ -149,7 +149,7 @@ class ChartTester(ChartLinter):
             release = subprocess.Popen(['helm', 'template', 'tmp', self.chart, '--validate', '--is-upgrade'],
                                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out_rel, err_rel = release.communicate()
-            output = out_rel.decode('utf-8')
+            output = str(out_rel, 'utf-8')
             split_manifests = output.split('---')
             self.mydict = {}
             if release.returncode == 0:
@@ -166,7 +166,7 @@ class ChartTester(ChartLinter):
                         find_spec_value = parse('$[*]').find(chart_templates)
                         self.mydict[chart_templates['kind']][metadata] = find_spec_value[0].value
             else:
-                print(' ❌ {} '.format(out_rel.decode('utf-8')))
+                print(' ❌ {} '.format(str(out_rel, 'utf-8')))
                 sys.exit(1)
         except Exception as err:
             print('❌ rendering {} chart templates failed :: {}'.format(err, self.chart))
