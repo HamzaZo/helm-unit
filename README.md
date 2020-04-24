@@ -1,5 +1,5 @@
 [![Licence](https://img.shields.io/badge/licence-Apache%202.0-green)]()
-[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.3-brightgreen)]()
+[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.4-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-v3.7-green)]()
 
 # helm-unit 
@@ -36,7 +36,7 @@ $ helm plugin install https://github.com/HamzaZo/helm-unit
 Install a specific version:
 
 ```shell
-$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.2
+$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.4
 ```
 
 You can also verify it's been installed using:
@@ -188,52 +188,52 @@ Run test
 
 ```shell
 $ helm unit --chart example/sample-front --tests example/unit-test
-✔️ Detecting Helm 3 : PASS 🎯
+√ Detecting Helm 3 :  PASS  
 
-✔️ Validating chart syntax..⏳
+√ Validating chart syntax..
 
 ==> Linting example/sample-front
-PASS 🎯 
+ PASS  
 
----> Applying test-service.yaml file..⏳
+---> Applying test-service.yaml file..
 
 ==> Running Tests on sample-front-svc Service ..
 
-✔️ check if service listen on the right port : PASS 🎯
+√ check if service listen on the right port :  PASS 
 
-✔️ ensure that service forward traffic to the right pod port : PASS 🎯
+√ ensure that service forward traffic to the right pod port :  PASS 
 
-✔️ verify that service is using these labels as selector app.kubernetes.io/name: sample-front: PASS 🎯
+√ verify that service is using these labels as selector app.kubernetes.io/name: sample-front:  PASS 
 
-✔️ verify that service is using these labels as selector app.kubernetes.io/instance: tmp: PASS 🎯
+√ verify that service is using these labels as selector app.kubernetes.io/instance: tmp:  PASS 
 
-✔️ check if service is not exposed outside of the cluster : PASS 🎯
+√ check if service is not exposed outside of the cluster :  PASS 
 
----> Applying test-ingress.yaml file..⏳
+---> Applying test-ingress.yaml file..
 
 ==> Running Tests on sample-front-ing Ingress ..
 
-✔️ affirm that /api uri is exposed by ingress : PASS 🎯
+√ affirm that /api uri is exposed by ingress :  PASS 
 
-✔️ check that metadata labels are set and not empty : PASS 🎯
+√ check that metadata labels are set and not empty :  PASS 
 
----> Applying test-deployment.yaml file..⏳
+---> Applying test-deployment.yaml file..
 
 ==> Running Tests on sample-front Deployment ..
 
-✔️ check if we use the right number of replicas : PASS 🎯
+√ check if we use the right number of replicas :  PASS 
 
-✔️ check that container image does not using latest as tag : PASS 🎯
+√️ check that container image does not using latest as tag :  PASS 
 
-❌ validate that serviceAccount Name exist : FAILED 
+ X  validate that serviceAccount Name exist :  FAILED  
 
-✔️ validate container port value : PASS 🎯
+√ validate container port value :  PASS 
 
-❌ ensure that cpu/memory resources were set : FAILED 
+ X  ensure that cpu/memory resources were set :  FAILED  
 
-✔️ check that deployment metadata do not contains this labels : PASS 🎯
+️√ check that deployment metadata do not contains this labels :  PASS  
 
-✔️ ensure that deployment does not have security context : PASS 🎯
+√ ensure that deployment does not have security context :  PASS 
 
 ==> Unit Tests Summary:
 
@@ -253,7 +253,7 @@ Number of success tests : 5
 Number of failed tests : 2
 
 
-🕸  Happy Helming testing day! 🕸
++-------------------------+ Happy Helming testing day! +-------------------------+
 
 ```
 
