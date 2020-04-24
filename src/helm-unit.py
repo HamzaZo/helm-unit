@@ -67,7 +67,7 @@ class Unit:
 
     def tests_loader(self):
         """
-        Load Unit Tests from directory. 
+        Load Unit Tests from directory.
         """
         try:
             if os.path.exists(self.tests) and os.path.isdir(self.tests):
@@ -95,7 +95,7 @@ class Linting(Unit):
 
     def linting_chart(self):
         """
-        Chart syntax validator 
+        Chart syntax validator
         """
         try:
             self.initialize_unit()
