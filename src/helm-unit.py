@@ -89,7 +89,7 @@ class Unit:
             sys.exit(1)
 
 
-class ChartLinter(Unit):
+class Linting(Unit):
     def __init__(self):
         super().__init__()
 
@@ -138,7 +138,7 @@ class YamlDump(YAML):
             return stream.getvalue()
 
 
-class ChartTester(ChartLinter):
+class Testing(Linting):
     def __init__(self):
         super().__init__()
 
@@ -212,8 +212,7 @@ class ChartTester(ChartLinter):
                         if val not in match_types[asserts_test.value['type']]:
                             print('\033[1;31;10m X \033[0m  Test: \033[1;31;10m {} \033[0m contains unsupported value '
                                   '\033[1;31;10m {} '
-                                  '\033[0m - We only support {} '.format(kind_name, val, match_types[
-                                asserts_test.value['type']]))
+                                  '\033[0m - We only support {} '.format(kind_name, val, match_types[asserts_test.value['type']]))
                             return False
         return True
 
@@ -236,9 +235,9 @@ class ChartTester(ChartLinter):
             try:
                 chartToTest = self.mydict[kind_type[0].value][kind_name[0].value]
             except Exception as err:
-                print('\033[1;31;10m X \033[0m {} kind with name {} does not exist in chart {} - testing failed '.format(kind_type[0].value,
-                                                                                                   kind_name[0].value,
-                                                                                                   self.chart))
+                print(
+                    '\033[1;31;10m X \033[0m {} kind with name {} does not exist in chart {} - testing failed '.format(
+                        kind_type[0].value, kind_name[0].value, self.chart))
                 print('Found {} as names for kind {}  - Make sure you are using the right name!'.format(
                     [key for key in self.mydict[kind_type[0].value]], kind_type[0].value))
                 continue
@@ -254,7 +253,8 @@ class ChartTester(ChartLinter):
                         find_spec = parse('$.' + item['path']).find(chartToTest)
                         if len(find_spec) == 0:
                             print(
-                                '\033[1;31;10m X \033[0m Errors : Could not find expected {} in {} \n'.format(item['path'], k.value['name']))
+                                '\033[1;31;10m X \033[0m Errors : Could not find expected {} in {} \n'.format(
+                                    item['path'], k.value['name']))
                             test_ko += 1
                             break
                         if k.value['type'] == 'equal':
@@ -262,14 +262,16 @@ class ChartTester(ChartLinter):
                                 print('√ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         elif k.value['type'] == 'notEqual':
                             if find_spec[0].value is not None and find_spec[0].value != item['value']:
                                 print('√ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         elif k.value['type'] == 'contains':
                             typeItemval = type(item['value'])
@@ -280,7 +282,8 @@ class ChartTester(ChartLinter):
                                     print('√ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                     test_ok += 1
                                 else:
-                                    print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                    print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                        k.value['name']))
                                     test_ko += 1
                             else:
                                 yamldump = YamlDump()
@@ -289,10 +292,12 @@ class ChartTester(ChartLinter):
                                 sizeVal = len(item['value'])
                                 for indexVal in range(sizeVal):
                                     if item['value'][indexVal] in valuesToTest:
-                                        print('√ {} {}: \033[1;32;10m PASS \033[0m\n'.format(k.value['name'], item['value'][indexVal]))
+                                        print('√ {} {}: \033[1;32;10m PASS \033[0m\n'.format(k.value['name'],
+                                                                                             item['value'][indexVal]))
                                         test_ok += 1
                                     else:
-                                        print('\033[1;31;10m X \033[0m {} {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name'], item['value'][indexVal]))
+                                        print('\033[1;31;10m X \033[0m {} {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                            k.value['name'], item['value'][indexVal]))
                                         test_ko += 1
                         elif k.value['type'] == 'notContains':
                             typeItemval = type(item['value'])
@@ -303,7 +308,8 @@ class ChartTester(ChartLinter):
                                     print('️√ {} : \033[1;32;10m PASS \033[0m \n'.format(k.value['name']))
                                     test_ok += 1
                                 else:
-                                    print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                    print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                        k.value['name']))
                                     test_ko += 1
                             else:
                                 yamldump = YamlDump()
@@ -312,24 +318,28 @@ class ChartTester(ChartLinter):
                                 sizeVal = len(item['value'])
                                 for indexVal in range(sizeVal):
                                     if item['value'][indexVal] not in valuesToTest:
-                                        print('√ {} {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name'], item['value'][indexVal]))
+                                        print('√ {} {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name'],
+                                                                                              item['value'][indexVal]))
                                         test_ok += 1
                                     else:
-                                        print('\033[1;31;10m X \033[0m {} {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name'], item['value'][indexVal]))
+                                        print('\033[1;31;10m X \033[0m {} {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                            k.value['name'], item['value'][indexVal]))
                                         test_ko += 1
                         elif k.value['type'] == 'isNotEmpty':
                             if find_spec[0].value is not None and len(find_spec[0].value) > 0:
                                 print('√ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         elif k.value['type'] == 'isEmpty':
                             if len(find_spec[0].value) == 0:
                                 print('√ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         elif k.value['type'] == 'matchValue':
                             value_to_match = re.search(item['pattern'], find_spec[0].value)
@@ -337,7 +347,8 @@ class ChartTester(ChartLinter):
                                 print('√️ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         elif k.value['type'] == 'notMatchValue':
                             value_to_match = re.search(item['pattern'], find_spec[0].value)
@@ -345,7 +356,8 @@ class ChartTester(ChartLinter):
                                 print('√️ {} : \033[1;32;10m PASS \033[0m\n'.format(k.value['name']))
                                 test_ok += 1
                             else:
-                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(k.value['name']))
+                                print('\033[1;31;10m X \033[0m {} : \033[1;31;10m FAILED \033[0m \n'.format(
+                                    k.value['name']))
                                 test_ko += 1
                         else:
                             print('\033[1;31;10m X \033[0m Unrecognized type {}  \n'.format(k.value['type']))
@@ -371,7 +383,7 @@ class ChartTester(ChartLinter):
 
 if __name__ == "__main__":
     yaml = YAML()
-    chart = ChartTester()
+    chart = Testing()
     chart.run_test()
     print('+-------------------------+ '
           'Happy Helming testing day! '
