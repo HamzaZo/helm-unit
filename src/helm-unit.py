@@ -9,6 +9,7 @@ import sys
 import glob
 from ruamel.yaml.compat import StringIO
 import re
+from colorama import Fore, Style
 
 
 class Unit:
@@ -57,15 +58,15 @@ class Unit:
                             test_content = yaml.load(stream)
                         self.dic_tests[file_name.replace(self.tests + '/', '')] = test_content
                 else:
-                    print(' {} No yaml test file was found in {} directory'.format(
-                        self.tests, str("\033[1;31;10m X \033[0m")))
+                    print('{} X {} No yaml test file was found in {} directory'.format(
+                        Fore.RED, Style.RESET_ALL, self.tests))
                     sys.exit(1)
             else:
-                print(" {} {} directory  does not exists".format(
-                    self.tests, str("\033[1;31;10m X \033[0m")))
+                print("{} X {} {} directory  does not exists".format(
+                    Fore.RED, Style.RESET_ALL, self.tests))
                 sys.exit(1)
         except Exception as err:
-            print('{} {}'.format(err, str("\033[1;31;10m X \033[""0m")))
+            print('{} X {} {}'.format(Fore.RED, Style.RESET_ALL, err))
             sys.exit(1)
 
 
@@ -80,16 +81,14 @@ def check_version():
         compatibility_version = output[0].split('.')[1]
         if output[0].startswith('v3'):
             if int(compatibility_version) > 0:
-                print('√ Detecting Helm 3 : {} \n'.format(
-                    str("\033[1;32;10m PASS \033[0m")))
+                print('√ Detecting Helm 3 : {} PASS {} \n'.format(Fore.GREEN, Style.RESET_ALL))
             else:
-                print('{} You are using an incompatible version, '
-                      'see https://github.com/HamzaZo/helm-unit#prerequisite'.format(
-                       str("\033[1;31;10m X \033[0m")))
+                print('{} X {} You are using an incompatible version, '
+                      'see https://github.com/HamzaZo/helm-unit#prerequisite'.format(Fore.RED, Style.RESET_ALL))
                 sys.exit(1)
     except ValueError as erv:
-        print('{} Unable to find a supported helm version :: {}'.format(
-            erv, str("\033[1;31;10m X \033[""0m")))
+        print('{} X {} Unable to find a supported helm version :: {}'.format(
+            Fore.RED, Style.RESET_ALL, erv))
         sys.exit(1)
 
 
@@ -111,21 +110,22 @@ class Linting(Unit):
                 out_syn, out_err = check_syntax.communicate()
                 if check_syntax.returncode == 0:
                     msg = str(out_syn, 'utf-8').replace('[INFO] Chart.yaml: icon is recommended',
-                                                        str("\033[1;32;10m PASS \033[0m")).replace(
+                                                        'PASS').replace(
                         '1 chart(s) linted, 0 chart(s) failed', '').strip()
                     print('{} \n'.format(msg))
+
                 else:
                     msg = str(out_syn, 'utf-8').replace('[INFO] Chart.yaml: icon is recommended', '').replace(
                         'Error: 1 chart(s) linted, 1 chart(s) failed', '').strip()
-                    print('{} {} \n'.format(msg, str("\033[1;31;10m X \033[0m")))
+                    print('{} X {} {} \n'.format(Fore.RED, Style.RESET_ALL, msg))
                     sys.exit(1)
             else:
-                print('{} Could not find templates in {} chart'.format(
-                    self.chart, str("\033[1;31;10m X \033[0m")))
+                print('{} X {} Could not find templates in {} chart'.format(
+                    Fore.RED, Style.RESET_ALL, self.chart))
                 sys.exit(1)
         except Exception as err:
-            print('{} Failed to find a chart - linting failed :: {}'.format(
-                err, str("\033[1;31;10m X \033[0m")))
+            print('{} X {} Failed to find a chart - linting failed :: {}'.format(
+                Fore.RED, Style.RESET_ALL, err))
             sys.exit(1)
 
 
@@ -146,32 +146,23 @@ def assert_pre_check(asserts_test, kind_name):
     }
 
     if 'type' not in asserts_test.value:
-        print(
-            '{}Test: {} does not have an assert type'.format(
-                str("\033[1;31;10m X \033[0m"),
-                str("\033[1;31;10m" + kind_name + "\033[0m")))
+        print(f'{Fore.RED}X {Style.RESET_ALL}Test:{Fore.RED} {kind_name}'
+              f'{Style.RESET_ALL} does not have an assert type\n')
         return False
     if 'values' not in asserts_test.value:
-        print('{}Test: {} does not have an assert values'.format(
-            str("\033[1;31;10m X \033[0m"),
-            str("\033[1;31;10m" + kind_name + "\033[0m")))
+        print(f'{Fore.RED}X {Style.RESET_ALL}Test:{Fore.RED} {kind_name} '
+              f'{Style.RESET_ALL} does not have an assert values\n')
         return False
     if asserts_test.value['type'] in match_types:
         for match_item in match_types[asserts_test.value['type']]:
             for item in asserts_test.value['values']:
                 if match_item not in item:
-                    print(
-                        '{}Test: {} does not have {} in assert type'.format(
-                            str("\033[1;31;10m X ""\033[""0m"),
-                            str("\033[1;31;10m" + kind_name + " \033[0m"),
-                            str("\033[1;31;10m" + match_item + "\033[0m")))
+                    print(f'{Fore.RED}X {Style.RESET_ALL}Test: {kind_name} does not have {match_item} in assert type\n')
                     return False
                 for val in item:
                     if val not in match_types[asserts_test.value['type']]:
-                        print('{}Test: {} contains unsupported value {} - We only support {} '.format(
-                            str("\033[1;31;10m X ""\033[""0m"),
-                            str("\033[1;31;10m" + kind_name + "\033[0m"),
-                            str("\033[1;31;10m" + val + "\033[0m"), match_types[asserts_test.value['type']]))
+                        print(f'{Fore.RED}X {Style.RESET_ALL}Test: {kind_name} contains unsupported value {val} '
+                              f'- We only support {match_types[asserts_test.value["type"]]}\n')
                         return False
     return True
 
@@ -221,13 +212,13 @@ class Testing(Linting):
                         find_spec_value = parse('$[*]').find(chart_templates)
                         self.mydict[chart_templates['kind']][metadata] = find_spec_value[0].value
             else:
-                print(' {} {} '.format(
-                    str(out_rel, 'utf-8'), str("\033[1;31;10m X \033[""0m")))
+                print(' {} X {} {} '.format(
+                    Fore.RED, Style.RESET_ALL, str(out_rel, 'utf-8')))
                 sys.exit(1)
 
         except Exception as err:
-            print('{} rendering {} chart templates failed :: {}'.format(
-                err, self.chart, str("\033[1;31;10m X \033[""0m")))
+            print('{} X {} rendering {} chart templates failed :: {}'.format(
+                Fore.RED, Style.RESET_ALL, self.chart, err))
             sys.exit(1)
 
     def run_test(self):
@@ -237,14 +228,12 @@ class Testing(Linting):
         self.render_chart()
         msg = ''
         for file_name, file_test in self.dic_tests.items():
-            print('---> Applying {} file..\n'.format(
-                str("\033[1m" + file_name + "\033[0m")))
+            print(f'---> Applying {file_name} file..\n')
             time.sleep(1)
             kind_type = parse('$.tests[0].type').find(file_test)
             kind_name = parse('$.tests[0].name').find(file_test)
-            print('==> Running Tests on {} {}..\n'.format(
-                str("\033[1m" + kind_name[0].value + "\033[0m"),
-                str("\033[1m" + kind_type[0].value + "\033[0m")))
+            print(f'==> Running Tests on {Fore.BLUE} {kind_name[0].value} {kind_type[0].value} {Style.RESET_ALL}..\n')
+
             time.sleep(1)
             test_scenario = parse('$..asserts[*]').find(file_test)
 
@@ -253,9 +242,8 @@ class Testing(Linting):
                 chart_to_test = self.mydict[kind_type[0].value][kind_name[0].value]
 
             except Exception:
-                print(
-                    ' {} {} kind with name {} does not exist in {} chart - Testing Failed '.format(
-                        str("\033[1;31;10m X \033[0m"), kind_type[0].value, kind_name[0].value, self.chart))
+                print(f'{Fore.RED} X {Style.RESET_ALL} {kind_type[0].value} kind with name {kind_name[0].value}'
+                      f'does not exist in {self.chart} chart - Testing Failed ')
                 print('Found {} as names for kind {}  - Make sure you are using the right name!'.format(
                     [key for key in self.mydict[kind_type[0].value]], kind_type[0].value))
                 continue
@@ -270,30 +258,27 @@ class Testing(Linting):
                     for item in k.value['values']:
                         find_spec = parse('$.' + item['path']).find(chart_to_test)
                         if len(find_spec) == 0:
-                            print(
-                                '{} ERROR: Could not find expected {} in {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), item['path'], k.value['name']))
+                            print(f'{Fore.RED} X {Style.RESET_ALL} ERROR: Could not find expected {item["path"]}'
+                                  f'in {k.value["name"]} \n')
                             test_ko += 1
                             break
                         if k.value['type'] == 'equal':
                             if find_spec[0].value is not None and find_spec[0].value == item['value']:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         elif k.value['type'] == 'notEqual':
                             if find_spec[0].value is not None and find_spec[0].value != item['value']:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         elif k.value['type'] == 'contains':
                             type_item_value = type(item['value'])
@@ -301,13 +286,12 @@ class Testing(Linting):
                                 self.content_array = [match.value for match in
                                                       parse('$.' + item['path']).find(chart_to_test)]
                                 if item['value'] in self.content_array:
-                                    print('√ {} : {}\n'.format(
-                                        k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                    print('√ {} : {} PASS {} \n'.format(
+                                        k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                     test_ok += 1
                                 else:
-                                    print('{} {} : {} \n'.format(
-                                        str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                        str("\033[1;31;10m FAILED \033[0m")))
+                                    print('{} X {} {} : {} FAILED {} \n'.format(
+                                        Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                     test_ko += 1
                             else:
                                 dump_yaml = YamlDump()
@@ -316,13 +300,13 @@ class Testing(Linting):
                                 value_size = len(item['value'])
                                 for index in range(value_size):
                                     if item['value'][index] in values_to_test:
-                                        print('√ {} {}: {} \n'.format(
-                                            k.value['name'], item['value'][index], str("\033[1;32;10m PASS \033[0m")))
+                                        print('√ {} {}: {} PASS {} \n'.format(
+                                            k.value['name'], item['value'][index], Fore.GREEN, Style.RESET_ALL))
                                         test_ok += 1
                                     else:
-                                        print('{} {} {} : {} \n'.format(
-                                            str("\033[1;31;10m X \033[0m"), k.value['name'], item['value'][index],
-                                            str("\033[1;31;10m FAILED \033[0m")))
+                                        print('{} X {} {} {} : {} FAILED \n'.format(
+                                            Fore.RED, Style.RESET_ALL, k.value['name'], item['value'][index],
+                                            Fore.RED, Style.RESET_ALL))
                                         test_ko += 1
                         elif k.value['type'] == 'notContains':
                             type_item_value = type(item['value'])
@@ -330,13 +314,12 @@ class Testing(Linting):
                                 self.content_array = [match.value for match in
                                                       parse('$.' + item['path']).find(chart_to_test)]
                                 if item['value'] not in self.content_array:
-                                    print('√ {} : {}\n'.format(
-                                        k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                    print('√ {} : {} PASS {} \n'.format(
+                                        k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                     test_ok += 1
                                 else:
-                                    print('{} {} : {} \n'.format(
-                                        str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                        str("\033[1;31;10m FAILED \033[0m")))
+                                    print('{} X {} {} : {} FAILED {} \n'.format(
+                                        Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                     test_ko += 1
                             else:
                                 dump_yaml = YamlDump()
@@ -345,77 +328,69 @@ class Testing(Linting):
                                 value_size = len(item['value'])
                                 for index in range(value_size):
                                     if item['value'][index] not in values_to_test:
-                                        print('√ {} {}: {} \n'.format(
-                                            k.value['name'], item['value'][index], str("\033[1;32;10m PASS \033[0m")))
+                                        print('√ {} {}: {} PASS {} \n'.format(
+                                            k.value['name'], item['value'][index], Fore.GREEN, Style.RESET_ALL))
                                         test_ok += 1
                                     else:
-                                        print('{} {} {} : {} \n'.format(
-                                            str("\033[1;31;10m X \033[0m"), k.value['name'], item['value'][index],
-                                            str("\033[1;31;10m FAILED \033[0m")))
+                                        print('{} X {} {} {} : {} FAILED \n'.format(
+                                            Fore.RED, Style.RESET_ALL, k.value['name'], item['value'][index],
+                                            Fore.RED, Style.RESET_ALL))
                                         test_ko += 1
                         elif k.value['type'] == 'isNotEmpty':
                             if find_spec[0].value is not None and len(find_spec[0].value) > 0:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         elif k.value['type'] == 'isEmpty':
                             if len(find_spec[0].value) == 0:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         elif k.value['type'] == 'matchValue':
                             value_to_match = re.search(item['pattern'], find_spec[0].value)
                             if value_to_match and value_to_match is not None:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         elif k.value['type'] == 'notMatchValue':
                             value_to_match = re.search(item['pattern'], find_spec[0].value)
                             if not value_to_match and value_to_match is None:
-                                print('√ {} : {}\n'.format(
-                                    k.value['name'], str("\033[1;32;10m PASS \033[0m")))
+                                print('√ {} : {} PASS {} \n'.format(
+                                    k.value['name'], Fore.GREEN, Style.RESET_ALL))
                                 test_ok += 1
                             else:
-                                print('{} {} : {} \n'.format(
-                                    str("\033[1;31;10m X \033[0m"), k.value['name'],
-                                    str("\033[1;31;10m FAILED \033[0m")))
+                                print('{} X {} {} : {} FAILED {} \n'.format(
+                                    Fore.RED, Style.RESET_ALL, k.value['name'], Fore.RED, Style.RESET_ALL))
                                 test_ko += 1
                         else:
-                            print('{} Unrecognized type {}  \n'.format(
-                                k.value['type'], str("\033[1;31;10m X \033[0m")))
+                            print('{} X {} Unrecognized type {}  \n'.format(
+                                Fore.RED, Style.RESET_ALL, k.value['type']))
 
             except Exception as err:
-                print('{} Testing {}  :: {} failed'.format(
-                    str("\033[1;31;10m X \033[0m"), err, self.chart))
-
-            start_failed_color = str("\033[1;31;10m")
-            start_success_color = str("\033[1;32;10m")
-            end_color = str("\033[0m")
+                print('{} X {}  Testing {}  :: {} failed'.format(
+                    Fore.RED, Style.RESET_ALL, self.chart, err))
 
             if test_ok > 0 and test_ko == 0:
-                test_color = start_success_color + file_name + end_color
+                test_color = Fore.GREEN + file_name + Style.RESET_ALL
             else:
-                test_color = start_failed_color + file_name + end_color
+                test_color = Fore.RED + file_name + Style.RESET_ALL
 
             msg += test_color + '\n' + 'Number of executed tests : ' + str(
                 test_ok + test_ko) + '\n' + 'Number of success tests : ' + str(
                 test_ok) + '\n' + 'Number of failed tests : ' + str(test_ko) + '\n\n'
-        print('{} \n'.format(str("\033[1;34;10m==> Unit Tests Summary\033[0m:")))
+        print('{}==> Unit Tests Summary{} \n'.format(Fore.BLUE, Style.RESET_ALL))
         print(msg)
 
 
