@@ -1,5 +1,5 @@
 name: "unit"
-version: "0.1.4"
+version: "0.1.5"
 usage: "Run unit test on helm chart templates"
 description: |-
   Run unit-test on a chart locally without deploying the release.

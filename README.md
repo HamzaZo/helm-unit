@@ -1,5 +1,5 @@
 [![Licence](https://img.shields.io/badge/licence-Apache%202.0-green)]()
-[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.4-brightgreen)]()
+[![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.5-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-v3.7-green)]()
 
 # helm-unit 
@@ -36,7 +36,7 @@ $ helm plugin install https://github.com/HamzaZo/helm-unit
 Install a specific version:
 
 ```shell
-$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.4
+$ helm plugin install https://github.com/HamzaZo/helm-unit --version 0.1.5
 ```
 
 You can also verify it's been installed using:
