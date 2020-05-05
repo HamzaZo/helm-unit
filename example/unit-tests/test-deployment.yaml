@@ -4,7 +4,6 @@ tests:
     name: sample-front
     asserts:
     - name: check if we use the right number of replicas
-      type: equal
       values:
       - path: spec.replicas
         value: 1 
