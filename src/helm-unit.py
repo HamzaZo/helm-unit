@@ -1,6 +1,5 @@
 import argparse
 import os
-from shutil import which
 import subprocess
 from datetime import datetime
 from ruamel.yaml import YAML
