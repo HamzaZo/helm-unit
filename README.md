@@ -2,7 +2,7 @@
 [![Helm](https://img.shields.io/badge/plugin-helm--unit--0.1.5-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-v3.7-green)]()
 
-# helm-unit 
+# helm-unit - DEPRECATED
 
 ## Overview
 
