@@ -6,8 +6,7 @@ echo "Downloading and installing helm-unit v${version} ..."
 
 # Find correct archive name
 unameOut="$(uname -s)"
-github_oauth_token=e76d5db607c680a045edadee409349ae322c8303
-
+github_oauth_token=<TOKEN>
 case "${unameOut}" in
     Linux*)     os=Linux;;
     Darwin*)    os=Darwin;;
